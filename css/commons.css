@@ -116,6 +116,20 @@
 .me-40 { margin-right: 40px; }
 .me-50 { margin-right: 50px; }
 
+/* 글자 색상 유틸리티 클래스 */
+.red { color: #d63031; }
+.orange { color: #e17055; }
+.yellow { color: #fdcb6e; }
+.green { color: #00b894; }
+.blue { color: #0984e3; }
+.purple { color: #6c5ce7; }
+.white { color: #FFFFFF; }
+.black { color: #2d3436; }
+.gray { color: #636e72; }
+.silver { color: #BDC3C7; }
+.gold { color: #D4AF37; }
+
+
 
 /* 컴포넌트(Component) 디자인 */
 
