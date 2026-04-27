@@ -158,6 +158,11 @@
     border-radius: 0.1em;
     cursor: pointer;
 }
+a.btn {
+    display: inline-block;
+    text-align: center;
+    text-decoration: none;
+}
 .btn:hover { /* 조건부 디자인 : 마우스가 올라갔을 때 */
     filter: brightness(0.95);
 }
