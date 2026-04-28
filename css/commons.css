@@ -235,16 +235,18 @@ a.btn {
 */
 .pagination {
     text-align: center;
+    font-size: 16px;
+    color: #2d3436;
 }
 .pagination > a {
-    color: #2d3436;
     text-decoration: none;
     /* border: 1px solid transparent; */
     display: inline-block;
-    font-size: 16px;
     min-width: 2em;
     padding: 0.25em;
     text-align: center;
+    color: inherit;
+    font-size: inherit;
 }
 .pagination > a.on,
 .pagination > a:hover {
