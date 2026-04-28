@@ -27,7 +27,15 @@
             font-size: 20px;
             font-weight: bold;
             padding: 1em;
-            background-color: #fdfdfd;
+            /* background-color: #fdfdfd; */
+
+            /* 배경이미지를 넣게 위한 설정 (background-*) */
+            /* background-image: url("https://fastly.picsum.photos/id/292/3852/2556.jpg?hmac=cPYEh0I48Xpek2DPFLxTBhlZnKVhQCJsbprR-Awl9lo"); */
+            /* background-image: url("./images/noodle.png"); */
+            background-size: 70% 60%;
+            background-repeat: no-repeat;
+            background-position-x: 150%;
+            background-position-y: 150%;
         }
     </style>
 </head>
@@ -41,10 +49,10 @@
             <!--4줄짜리 화면 배치-->
             <div class="float-area">
                 <div class="outer">
-                    <div class="inner">전체보기</div>
+                    <div class="inner" style="background-image: url('./images/noodle.png');">전체보기</div>
                 </div>
                 <div class="outer">
-                    <div class="inner">1인분 주문</div>
+                    <div class="inner" style="background-image: url('./images/naver.png');">1인분 주문</div>
                 </div>
                 <div class="outer">
                     <div class="inner">프랜차이즈</div>
