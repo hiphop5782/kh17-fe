@@ -227,3 +227,29 @@ a.btn {
 .table > tbody {
     text-align: center;
 }
+
+/* 
+    페이지네이션 디자인 
+    - .pagination이라고 추가하면 자동 적용되도록 구현
+    - a태그를 개조해서 폭 설정이 가능하도록 구현
+*/
+.pagination {
+    text-align: center;
+}
+.pagination > a {
+    color: #2d3436;
+    text-decoration: none;
+    /* border: 1px solid transparent; */
+    display: inline-block;
+    font-size: 16px;
+    min-width: 2em;
+    padding: 0.25em;
+    text-align: center;
+}
+.pagination > a.on,
+.pagination > a:hover {
+    /* border: 1px solid #b2bec3; */
+    box-shadow: 0 0 0 1px #b2bec3;
+    font-weight: bold;
+    color: #e17055;
+}
