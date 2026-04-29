@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>멜론(melon)</title>
+    <link rel="icon" href="/kh.jpg" type="image/jpeg">
+
+    <!-- 아이콘 -->
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
+
+    <!-- 디자인을 작성하기 위한 영역 -->
+    <link rel="stylesheet" type="text/css" href="./commons.css">
+    <style>
+        div {
+            box-shadow: 0 0 0 1px gray;
+        }
+        .outer {
+            width: 100%;
+            height: 168px;
+            padding: 16px 0px;
+        }
+        .outer > .inner,
+        .outer > .inner > .flex-area 
+        {
+            height: 100%;
+        }
+        /* flex-shrink는 공간이 모자른 경우 어느 비율로 영역에서 가져갈지를 결정하는 속성(↔ flex-grow) */
+        .outer .date-area {
+            width: 135px;
+            flex-shrink: 0;
+        }
+        .outer .image-area {
+            width: 240px;
+            flex-shrink: 0;
+        }
+        .outer .content-area {
+            width: 100%;
+            /* padding-left: 15px; */
+            margin-left: 15px;
+            flex-shrink: 1;
+            min-width: 0; /* flex로 인해서 생기는 늘어나는(최소폭을 확보하려는) 성질을 제거 */
+        }
+        /* 
+            제목은 1줄만 나오게 처리 (나머지는 말줄임표) 
+            <디자인이 적용되기 위한 전제조건>
+            1. 폭이 정해져 있을 것 (flex의 경우는 min-width를 제거) - 넘어감을 감지할 수 있도록
+            2. overflow 속성을 숨김(hidden)으로 바꿀 것
+            3. text-overflow 속성을 생략(ellipsis)으로 바꿀 것
+        */
+        .outer .content-area .title h3{
+            white-space: nowrap;    /*줄바꿈 금지*/
+            overflow: hidden;      /*넘어가면 숨김처리*/
+            text-overflow: ellipsis;/*글자가 넘어간 부분을 말줄임표로 표시*/
+        }
+        /* 
+            내용은 2줄만 나오게 처리 (나머지는 말줄임표) 
+            - 원래 CSS의 신기능은 브라우저 개발사에서 실험적으로 도입한 뒤 반응이 좋으면 표준이 되는 방식이다
+            - 브라우저 업체별로 실험적 기능을 제공하기 위한 접두사가 존재한다
+                `-webkit-`은 크롬, 사파리, 엣지, 안드로이드 등을 의미 (크로니움 엔진)
+                `-moz-`는 파이어폭스를 의미 (Gecko 엔진)
+                `-ms-`는 구형 Edge, Internet Explorer를 의미 (현재 사용하지 않음)
+                `-o-`는 오페라를 의미
+        */
+        .outer .content-area .detail {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+    <div class="container w-1100 mt-50 mb-50">
+        <div class="cell center">
+            <h1>멜론 매거진 화면</h1>
+        </div>
+
+        <div class="cell">
+            <div class="flex-area flex-vertical">
+                <div class="outer">
+                    <div class="inner">
+                        <div class="flex-area">
+                            <div class="date-area flex-area flex-center">
+                                <div class="center">
+                                    <div style="font-size: 24px; font-weight: bold;">28</div>
+                                    <div style="font-size: 12px;" class="gray">2026.04</div>
+                                </div>
+                            </div>
+                            <div class="image-area">
+                                <img src="https://www.dummyimage.com/240x135" width="100%" height="100%">
+                            </div>
+                            <div class="content-area flex-fill">
+                                <div class="title">
+                                    <h3 class="mt-0 mb-0">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam et egestas mauris. In placerat, ligula id bibendum suscipit, ex est bibendum ex, eget tempus est mauris sollicitudin lacus. Nullam ultricies leo nisi, sit amet iaculis velit tincidunt et. Pellentesque tincidunt ante ac elit semper eleifend. Fusce in leo quis elit maximus semper. Integer dui tellus, cursus eget erat non, suscipit molestie ipsum. Aliquam tempus bibendum convallis. Fusce in venenatis neque.</h3>
+                                </div>
+                                <div class="detail mt-10">
+                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam et egestas mauris. In placerat, ligula id bibendum suscipit, ex est bibendum ex, eget tempus est mauris sollicitudin lacus. Nullam ultricies leo nisi, sit amet iaculis velit tincidunt et. Pellentesque tincidunt ante ac elit semper eleifend. Fusce in leo quis elit maximus semper. Integer dui tellus, cursus eget erat non, suscipit molestie ipsum. Aliquam tempus bibendum convallis. Fusce in venenatis neque.
+                                </div>
+                                <div class="mt-20">
+                                    <span>
+                                        <i class="fa-solid fa-heart red"></i> 6
+                                    </span>
+                                    <span>|</span>
+                                    <span>댓글 ??</span>
+                                    <span>|</span>
+                                    <span>조회수 ??</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
