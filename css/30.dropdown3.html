@@ -13,18 +13,20 @@
     <link rel="stylesheet" type="text/css" href="./commons.css">
     <style>
         /* 시각화 테스트 */
-        ul { box-shadow: 0 0 0 1px black; }
-        li { box-shadow: 0 0 0 1px blue; }
-        a { box-shadow: 0 0 0 1px red; }
+        /* ul { box-shadow: 0 0 0 1px black; } */
+        /* li { box-shadow: 0 0 0 1px blue; } */
+        /* a { box-shadow: 0 0 0 1px red; } */
 
         /* (1) ul 태그의 기본 스타일 제거 */
-        .menu , .sub-menu {
+        .menu , 
+        .menu ul /* .sub-menu 대신 */
+        {
             list-style: none;
             padding: 0;
             margin: 0;
         }
         /* (2) 서브메뉴를 숨김 */
-        .sub-menu {
+        .menu ul {
             display: none;
         }
         /* (3) 메뉴를 가로로 나오게 배치 */
@@ -40,24 +42,43 @@
             text-align: center;
         }
         /* (5) 메뉴에 마우스가 올라가면 하위 메뉴를 출력 */
-        .menu li:hover > .sub-menu {
+        .menu li:hover > ul {
             display: block;
         }
         /* (6) 하위메뉴는 absolute 배치를 통해 다음 컨텐츠의 위치에 영향을 주지 않도록 변경 (+기준영역 설정) */
         .menu li {
             position: relative;
         }
-        .sub-menu {
+        .menu ul {
             position: absolute;
             left: 0;
             top:100%;
             width: 120px;
         }
         /* (7) 좌우 분리를 위한 .divider 생성 */
-        .divider {
+        .menu > .divider {
             width: 0px !important;
             margin-left: auto !important;
             margin-right: auto !important;
+        }
+        /* (8) 메뉴, 항목, 링크의 디자인 변경 */
+        .menu, 
+        .menu ul {
+            background-color: #2d3436;
+            color: white;
+        }
+        .menu a {
+            color: inherit;
+            background-color: inherit;
+            text-decoration: none;
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+        /* .menu a:hover  */
+        .menu li:hover 
+        {
+            background-color: #636e72;
         }
     </style>
 </head>
