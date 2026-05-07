@@ -52,14 +52,19 @@
             background-image: url("./images/invalid.png");
             border-color: #d63031;
         }
-
-
         
     </style>
 
     <!-- 자바스크립트 작성 영역 -->
     <script>
-
+        //아이디 검사 및 판정 함수
+        function checkMemberId() {
+            var tag = document.querySelector("[name=memberId]");//태그 선택
+            var regex = /^[a-z][a-z0-9]{4,19}$/;
+            var valid = regex.test(tag.value);
+            tag.classList.remove("success", "fail");//클래스 초기화
+            tag.classList.add(valid ? "success" : "fail");//클래스 추가
+        }
     </script>
 </head>
 <body>
@@ -77,7 +82,7 @@
         -->
         <div class="cell">
             <label>아이디 <i class="fa-solid fa-asterisk red"></i></label>
-            <input type="text" name="memberId" class="field w-100">
+            <input type="text" name="memberId" class="field w-100" oninput="checkMemberId();">
             <div class="success-feedback">멋진 아이디입니다!</div>
             <div class="fail-feedback">영문 소문자로 시작하며 숫자 포함 5~20글자로 작성하세요</div>
         </div>
