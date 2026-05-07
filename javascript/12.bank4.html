@@ -53,14 +53,81 @@
             //(+추가) 입력값을 외부 화면에 출력
             var target = document.querySelector(".target");
             var display = document.querySelector(".display");
+            var displayKorean = document.querySelector(".display-korean");
 
             if(target.value.length == 0) {//비어있으면
                 display.textContent = "금액을 입력하세요";
+                displayKorean.textContent = "금액을 입력하세요";
             }
             else {
                 var money = parseInt(target.value);
                 display.textContent = "이체 금액은 총 " + money.toLocaleString()+"원 입니다";
+                displayKorean.textContent = "이체 금액은 총 " + getKoreanAmount(money) +"원 입니다";
             }
+        }
+
+        //한글 금액을 계산하는 함수
+        function getKoreanAmount(money) {
+            var str = "";
+            var count = 0;
+            for(var i=money; parseInt(i) > 0; i /= 10) {
+                var part = i % 10;
+                if(part > 0) {
+                    var prefix = "";
+                    switch(part) {//숫자에 대한 글자
+                        case 1: prefix = "일"; break;
+                        case 2: prefix = "이"; break;
+                        case 3: prefix = "삼"; break;
+                        case 4: prefix = "사"; break;
+                        case 5: prefix = "오"; break;
+                        case 6: prefix = "육"; break;
+                        case 7: prefix = "칠"; break;
+                        case 8: prefix = "팔"; break;
+                        case 9: prefix = "구"; break;
+                    }
+
+                    var suffix = "";
+                    switch(count) {//자리수에 대한 글자
+                    case 1: suffix = "십"; break;
+                    case 2: suffix = "백"; break;
+                    case 3: suffix = "천"; break;
+                    case 4: suffix = "만"; break;
+                    case 5: suffix = "십만"; break;
+                    case 6: suffix = "백만"; break;
+                    case 7: suffix = "천만"; break;
+                    case 8: suffix = "억"; break;
+                    case 9: suffix = "십억"; break;
+                    case 10: suffix = "백억"; break;
+                    case 11: suffix = "천억"; break;
+                    case 12: suffix = "조"; break;
+                    }
+                    console.log(money, part, prefix, suffix);
+                    str = prefix+suffix + str;
+                }
+                count++;
+            }
+            return str;
+        }
+
+        //숫자에 대한 한글을 반환하는 함수
+        function getKoreanNumberString(number) {
+            switch(number) {
+            case 1: return "일";
+            case 2: return "이";
+            case 3: return "삼";
+            case 4: return "사";
+            case 5: return "오";
+            case 6: return "육";
+            case 7: return "칠";
+            case 8: return "팔";
+            case 9: return "구";
+            default: return "";
+            }
+        }
+
+        //자리수에 대한 한글을 반환하는 함수
+        function getKoreanNumberPosition() {            
+            
         }
     </script>
 </head>
@@ -92,6 +159,9 @@
         </div>
 
         <div class="cell mt-50 display" style="font-size: 24px;">
+            금액을 입력하세요
+        </div>
+        <div class="cell mt-50 display-korean" style="font-size: 24px;">
             금액을 입력하세요
         </div>
     </div>
