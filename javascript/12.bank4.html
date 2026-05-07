@@ -70,40 +70,31 @@
         function getKoreanAmount(money) {
             var str = "";
             var count = 0;
-            for(var i=money; parseInt(i) > 0; i /= 10) {
-                var part = i % 10;
-                if(part > 0) {
-                    var prefix = "";
-                    switch(part) {//숫자에 대한 글자
-                        case 1: prefix = "일"; break;
-                        case 2: prefix = "이"; break;
-                        case 3: prefix = "삼"; break;
-                        case 4: prefix = "사"; break;
-                        case 5: prefix = "오"; break;
-                        case 6: prefix = "육"; break;
-                        case 7: prefix = "칠"; break;
-                        case 8: prefix = "팔"; break;
-                        case 9: prefix = "구"; break;
-                    }
+            //네자리씩 끊어서 계산
+            for(var i=money; parseInt(i) > 0; i /= 10000) {
+                var part1 = parseInt(i / 1000 % 10);
+                var part2 = parseInt(i / 100 % 10);
+                var part3 = parseInt(i / 10 % 10);
+                var part4 = parseInt(i % 10);
+                //console.log("part", part1, part2, part3, part4);
+                
+                var prefix1 = getKoreanNumberString(part1);
+                var prefix2 = getKoreanNumberString(part2);
+                var prefix3 = getKoreanNumberString(part3);
+                var prefix4 = getKoreanNumberString(part4);
 
-                    var suffix = "";
-                    switch(count) {//자리수에 대한 글자
-                    case 1: suffix = "십"; break;
-                    case 2: suffix = "백"; break;
-                    case 3: suffix = "천"; break;
-                    case 4: suffix = "만"; break;
-                    case 5: suffix = "십만"; break;
-                    case 6: suffix = "백만"; break;
-                    case 7: suffix = "천만"; break;
-                    case 8: suffix = "억"; break;
-                    case 9: suffix = "십억"; break;
-                    case 10: suffix = "백억"; break;
-                    case 11: suffix = "천억"; break;
-                    case 12: suffix = "조"; break;
-                    }
-                    console.log(money, part, prefix, suffix);
-                    str = prefix+suffix + str;
+                if(prefix1.length > 0) prefix1 += "천";
+                if(prefix2.length > 0) prefix2 += "백";
+                if(prefix3.length > 0) prefix3 += "십";
+                var lengthTotal = prefix1.length + prefix2.length + prefix3.length + prefix4.length;
+                if(count > 0 && lengthTotal > 0) {//네자리중에 한자리라도 있고 만단위 이상이라면
+                    prefix4 += getKoreanNumberPosition(count);
                 }
+                //console.log(prefix1, prefix2, prefix3, prefix4);
+
+                var prefix = prefix1 + prefix2 + prefix3 + prefix4;
+                str = prefix + str;
+
                 count++;
             }
             return str;
@@ -126,8 +117,15 @@
         }
 
         //자리수에 대한 한글을 반환하는 함수
-        function getKoreanNumberPosition() {            
-            
+        function getKoreanNumberPosition(count) {            
+            switch(count) {
+            case 1: return "만";
+            case 2: return "억";
+            case 3: return "조";
+            case 4: return "경";
+            case 5: return "해";
+            default: return "";
+            }
         }
     </script>
 </head>
