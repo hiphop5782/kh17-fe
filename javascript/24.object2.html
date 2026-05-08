@@ -13,6 +13,18 @@
     <link rel="stylesheet" type="text/css" href="../css/commons.css">
     <style>
         div { box-shadow: 0 0 0 1px #cccccc;}
+
+        body {
+            width: 2000px;
+            height: 5000px;
+        }
+
+        .btn-top {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            z-index: 999;
+        }
     </style>
 
     <!-- 자바스크립트 작성 영역 -->
@@ -28,6 +40,79 @@
             var choice = window.confirm("확인창 테스트");
             console.log("choice", choice);
         }
+        function window03() {
+            var action = window.prompt("아무거나 입력");
+            console.log("action", action);
+        }
+        function window04() {
+            //innerWidth/Height - 창 내부 뷰포트 크기
+            //outerWidth/Height - 창 외부 크기
+            //scrollX/Y - 스크롤 위치(좌측 혹은 상단의 좌표)
+            console.log(window.innerWidth, window.innerHeight, window.scrollX, window.scrollY);
+        }
+        //(Q) .btn-top을 누르면 코드를 작성해서 스크롤을 가장 위로 올려보세요 (이동 명령을 찾으세요)
+        function moveTop() {
+            //window.scrollY = 0;//아쉽지만 안됨 (읽기 전용 속성... 변경은 함수로만 가능)
+            //window.scrollTo(0, 0);//단순한 이동
+            window.scrollTo({
+                top:0, 
+                behavior : "smooth"
+            });
+        }
+
+        function window05() {
+            window.open("https://www.naver.com");//새탭
+        }
+        function window06() {
+            //window.open("https://www.naver.com", "myWindow");//새탭+추적
+            //window.open("https://www.naver.com", "myWindow2", "width=500,height=500");//새창+추적
+            window.open("https://www.naver.com", "_blank", "width=500,height=500");//매번 새로운창
+        }
+
+
+        function location01() {
+            //console.log(window.location);
+            //window.location.href = "https://www.google.com";
+            
+            location.href = "https://www.google.com";//진짜 이동(이전페이지 기록 남음)
+            
+            //location.assign("https://www.google.com");//진짜 이동(이전페이지 기록 남음)
+            //location.replace("https://www.google.com");//가짜 이동(이전페이지 기록 안남음)
+        }
+        function location02() {
+            var choice = window.confirm("정말?");
+            if(choice == false) return;
+
+            location.href = "https://www.naver.com";
+        }
+
+        function history01() {
+            //console.log(window.history);
+            //history.back();
+            history.go(-1);
+        }
+
+        function document01() {
+            //console.log(window.document);
+            //var target = document.getElementById("sample1");//아이디를 이용한 태그 선택
+            //var target = document.getElementsByTagName("h2")[0];//태그명을 이용한 태그 선택(여러개)
+            //var target = document.getElementsByClassName("target1")[0];//클래스명을 이용한 태그 선택(여러개)
+
+            //var target = document.querySelector("#sample1");//css 선택자를 이용한 태그 선택
+            //var target = document.querySelector("h2");//태그명을 이용한 태그 선택
+            var target = document.querySelector(".target1");//클래스명을 이용한 태그 선택
+            target.style.color = "red";
+        }
+
+        function document02() {
+            //태그를 여러개 선택하여 배열로 반환하는 명령
+            var targets = document.querySelectorAll("h2");
+            //console.log(targets);
+
+            for(var i=0; i < targets.length; i++) {
+                targets[i].style.color = "red";
+            }
+        }
     </script>
 </head>
 <body>
@@ -39,10 +124,35 @@
         <div class="cell">
             <button type="button" class="btn btn-neutral" onclick="window01();">알림창</button>
             <button type="button" class="btn btn-neutral" onclick="window02();">확인창</button>
-            <button type="button" class="btn btn-neutral">입력창</button>
-            <button type="button" class="btn btn-neutral">새탭</button>
-            <button type="button" class="btn btn-neutral">새창</button>
-            <button type="button" class="btn btn-neutral">윈도우정보</button>
+            <button type="button" class="btn btn-neutral" onclick="window03();">입력창</button>
+            <button type="button" class="btn btn-neutral" onclick="window04();">윈도우정보</button>
+            <button type="button" class="btn btn-neutral" onclick="window05();">새탭</button>
+            <button type="button" class="btn btn-neutral" onclick="window06();">새창</button>
+
+            <button type="button" class="btn btn-positive btn-top" onclick="moveTop();">
+                <i class="fa-solid fa-arrow-up"></i>
+            </button>
+        </div>
+
+        <div class="cell mt-50">
+            <button type="button" class="btn btn-neutral" onclick="location01();">구글로 이동</button>
+            <button type="button" class="btn btn-neutral" onmouseenter="location02();">네이버로 이동</button>
+            <!-- 새로고침(reload) 등이 존재 -->
+        </div>
+
+        <div class="cell mt-50">
+            <button type="button" class="btn btn-neutral" onclick="history01();">뒤로 이동</button>
+        </div>
+
+        <div class="cell mt-50">
+            <button type="button" class="btn btn-neutral" onclick="document01();">태그선택1</button>
+            <button type="button" class="btn btn-neutral" onclick="document02();">태그선택2</button>
+        </div>
+        <div class="cell">
+            <h2 id="sample1" class="target1">Hello Javascript!</h2>
+            <h2 id="sample2" class="target1">Hello Javascript!</h2>
+            <h2 id="sample3" class="target2">Hello Javascript!</h2>
+            <h2 id="sample4" class="target2">Hello Javascript!</h2>
         </div>
     </div>
 </body>
