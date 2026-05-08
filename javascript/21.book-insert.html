@@ -48,14 +48,43 @@
         }
 
         function filterBookPrice(){
-            
+            var tag = document.querySelector("[name=bookPrice]");
+            var originValue = tag.value;
+            var replaceValue = originValue.replace(/[^0-9]/g, "");
+            tag.value = parseInt(replaceValue || 0);
         }
-        function checkBookPrice(){}
+        function checkBookPrice(){
+            var tag = document.querySelector("[name=bookPrice]");
+            var price = parseInt(tag.value);
+            var valid = price >= 0 && price <= 10000000000;
+            tag.classList.remove("success", "fail");
+            tag.classList.add(valid ? "success" : "fail");
+            return valid;
+        }
         
-        function filterBookPageCount(){}
-        function checkBookPageCount(){}
+        function filterBookPageCount(){
+            var tag = document.querySelector("[name=bookPageCount]");
+            var originValue = tag.value;
+            var replaceValue = originValue.replace(/[^0-9]/g, "");
+            tag.value = parseInt(replaceValue || 0);
+        }
+        function checkBookPageCount(){
+            var tag = document.querySelector("[name=bookPageCount]");
+            var pages = parseInt(tag.value);
+            var valid = pages > 0;
+            tag.classList.remove("success", "fail");
+            tag.classList.add(valid ? "success" : "fail");
+            return valid;
+        }
 
-        function checkBookGenre(){}
+        function checkBookGenre(){
+            var tag = document.querySelector("[name=bookGenre]");
+            var regex = /^(판타지|교양|소설|역사|과학|추리소설|자기계발|수험서)$/;
+            var valid = regex.test(tag.value);
+            tag.classList.remove("success", "fail");
+            tag.classList.add(valid ? "success" : "fail");
+            return valid;
+        }
 
         function checkForm(){
             var bookTitleValid = checkBookTitle();
@@ -75,7 +104,8 @@
     </script>
 </head>
 <body>
-    <form autocomplete="off" method="post" enctype="multipart/form-data">
+    <form autocomplete="off" method="post" enctype="multipart/form-data"
+                onsubmit="return checkForm();">
         
         <div class="container w-500 mt-50 mb-50">
             <div class="cell center">
@@ -84,45 +114,47 @@
 
             <div class="cell">
                 <label>도서명 <i class="fa-solid fa-asterisk red"></i></label>
-                <input type="text" name="bookTitle" class="field w-100">
+                <input type="text" name="bookTitle" class="field w-100" onblur="checkBookTitle();">
                 <div class="success-feedback">도서명 설정이 완료되었습니다</div>
                 <div class="fail-feedback">필수 입력 항목입니다</div>
             </div>
 
             <div class="cell">
                 <label>지은이</label>
-                <input type="text" name="bookAuthor" class="field w-100">
+                <input type="text" name="bookAuthor" class="field w-100" onblur="checkBookAuthor();">
                 <div class="fail-feedback">특수문자는 사용하실 수 없습니다</div>
             </div>
 
             <div class="cell">
                 <label>출판사</label>
-                <input type="text" name="bookPublisher" class="field w-100">
+                <input type="text" name="bookPublisher" class="field w-100" onblur="checkBookPublisher();">
             </div>
 
             <div class="cell">
                 <label>출간일</label>
-                <input type="date" name="bookPublicationDate" class="field w-100">
+                <input type="date" name="bookPublicationDate" class="field w-100" onblur="checkBookPublicationDate();">
                 <div class="fail-feedback">유효한 날짜 형식이 아닙니다</div>
             </div>
 
             <div class="cell">
                 <label>판매가 <i class="fa-solid fa-asterisk red"></i></label>
-                <input type="text" inputmode="numeric" name="bookPrice" class="field w-100">
+                <input type="text" inputmode="numeric" name="bookPrice" class="field w-100"
+                        oninput="filterBookPrice();" onblur="checkBookPrice();">
                 <div class="success-feedback">판매가 설정이 완료되었습니다</div>
                 <div class="fail-feedback">0원 이상 10억원 이하로만 설정 가능합니다</div>
             </div>
 
             <div class="cell">
                 <label>페이지 <i class="fa-solid fa-asterisk red"></i></label>
-                <input type="text" inputmode="numeric" name="bookPageCount" class="field w-100">
+                <input type="text" inputmode="numeric" name="bookPageCount" class="field w-100"
+                        oninput="filterBookPageCount();" onblur="checkBookPageCount();">
                 <div class="success-feedback">페이지수 설정이 완료되었습니다</div>
                 <div class="fail-feedback">페이지수는 0보다 커야합니다</div>
             </div>
 
             <div class="cell">
                 <label>장르 <i class="fa-solid fa-asterisk red"></i></label>
-                <select name="bookGenre" class="field w-100">
+                <select name="bookGenre" class="field w-100" oninput="checkBookGenre();">
                     <option value="">선택</option>
                     <option>판타지</option>
                     <option>교양</option>
