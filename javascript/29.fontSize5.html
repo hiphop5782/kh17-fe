@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>디자인 수업</title>
+    <link rel="icon" href="/kh.jpg" type="image/jpeg">
+
+    <!-- 아이콘 -->
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
+
+    <!-- 디자인을 작성하기 위한 영역 -->
+    <link rel="stylesheet" type="text/css" href="../css/commons.css">
+    <style>
+        div { box-shadow: 0 0 0 1px #cccccc;}
+
+        .target {
+            word-break: break-all;
+
+            transition: font-size 0.1s ease-out;
+        }
+    </style>
+
+    <!-- 자바스크립트 작성 영역 -->
+    <script>
+        window.addEventListener("load", function(){
+            //더하기 버튼과 빼기 버튼은 절대로 한번에 처리할 수 없습니다 (작업이 다름)
+            var fontSize = 16;
+
+            var btnMinus = document.querySelector(".btn-minus");
+            btnMinus.addEventListener("click", function(){
+                //this는 minus버튼
+                if(fontSize == 12) return;
+
+                fontSize --;
+
+                var target = document.querySelector(".target");
+                target.style.fontSize = fontSize + "px";
+
+                var span = document.querySelector(".current");
+                span.textContent = fontSize;
+            });
+
+            var btnPlus = document.querySelector(".btn-plus");
+            btnPlus.addEventListener("click", function(){
+                //this는 plus버튼
+                if(fontSize == 48) return;
+
+                fontSize++;
+
+                var target = document.querySelector(".target");
+                target.style.fontSize = fontSize + "px";
+
+                var span = document.querySelector(".current");
+                span.textContent = fontSize;
+            });
+        });
+    </script>
+</head>
+<body>
+    <div class="container w-600 mt-50 mb-50">
+        <div class="cell center">
+            <h1>글자 크기 변경 문제</h1>
+        </div>
+
+        <div class="cell center">
+            <button type="button" class="btn btn-neutral btn-minus">
+                <i class="fa-solid fa-minus"></i>
+            </button>
+            <span class="ms-20 me-20 current">16</span>
+            <button type="button" class="btn btn-neutral btn-plus">
+                <i class="fa-solid fa-plus"></i>
+            </button>
+        </div>
+
+        <div class="cell target">
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+            <p>Et aspernatur veniam velit irure dolores aute at sequi sint neque adipiscing porro accusamus. Eaque sequi doloremque ratione in inventore irure sunt duis exercitation nostrud. Odit voluptas quia neque ex. Accusamus eaque sed vero incididunt eiusmod illo sed amet dicta inventore nemo anim dolore ut aliquip.</p>
+            <p>Nisi voluptatem magna rem beatae eiusmod commodo lorem ratione id dolor veritatis aliquip ipsa quasi. Aperiam rem ab porro ipsum consequuntur quasi ea ipsam nemo pariatur magna voluptate veritatis quisquam eaque laudantium id. Vero aspernatur sed consectetur ab quia rem exercitation odit nisi quia. Quae quasi dolor culpa voluptatem vero cillum accusamus. Minim qui reprehenderit adipiscing voluptatem sed incididunt porro aliquip aperiam aliquip nulla ab nesciunt duis.</p>
+            <p>Esse sint aute voluptate deserunt veritatis aspernatur cillum accusantium exercitation ipsum odit adipiscing vitae. Aliqua veritatis enim ea vero vero architecto illo deserunt odit nostrud dicta. Et vero dolorem rem id fugit lorem ipsum duis fugit. Et eaque labore velit at nesciunt nulla rem elit laborum dolore nostrud totam. Ullamco ad quia lorem non velit amet sint nemo occaecat excepteur sit proident ut aspernatur. Labore adipiscing vitae ad vitae sint explicabo voluptatem porro non reprehenderit.</p>
+            <p>Ut aute eos qui lorem nulla at velit. Ut deserunt nostrud mollit inventore labore vero aperiam excepteur incididunt eos dolorem id do. Sed enim commodo dolore dolorem id lorem eos ea explicabo sit accusantium laudantium ea architecto ex. Tempor nemo sed ex sequi nostrud aspernatur veniam nulla occaecat. Accusamus laboris in id nesciunt laboris neque odit duis.</p>
+        </div>
+    </div>
+</body>
+</html>
