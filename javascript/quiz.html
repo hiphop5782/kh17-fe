@@ -21,6 +21,9 @@
         }
         .display-group > .display {
             width: 16.6666%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
         .outer {
@@ -37,6 +40,8 @@
     <!-- 자바스크립트 작성 영역 -->
     <script>
         window.addEventListener("load", function(){
+            var password = "";
+
             var btnShuffle = document.querySelector(".btn-shuffle");
             btnShuffle.addEventListener("click", function(){
                 var numbers = [1,2,3,4,5,6,7,8,9,0,"","","","","",""];
@@ -45,10 +50,41 @@
                 var buttons = document.querySelectorAll(".btn-number");
                 for(var i=0; i < buttons.length; i++) {
                     buttons[i].textContent = numbers[i];
-                    buttons[i].classList.remove("btn-neutral", "btn-positive", "btn-negative");
-                    buttons[i].classList.add(numbers[i] == "" ? "btn-negative" : "btn-positive");
+                    buttons[i].classList.remove("btn-neutral", "btn-positive");
+                    buttons[i].classList.add(numbers[i] === "" ? "btn-neutral" : "btn-positive");
                 }
             });
+
+            var numberButtons = document.querySelectorAll(".btn-number");
+            for(var i=0; i < numberButtons.length; i++) {
+                numberButtons[i].addEventListener("click", function(){
+                    if(password.length == 6) return;
+
+                    password += this.textContent;
+
+                    display();
+                });
+            }
+
+            var deleteButton = document.querySelector(".btn-delete");
+            deleteButton.addEventListener("click", function(){
+                if(password.length == 0) return;
+                password = password.substring(0, password.length-1);
+                display();
+            });
+
+            var clearButton = document.querySelector(".btn-clear");
+            clearButton.addEventListener("click", function(){
+                password = "";
+                display();
+            });
+
+            function display() {
+                var displayGroup = document.querySelectorAll(".display");
+                for(var i=0; i < displayGroup.length; i++) {
+                    displayGroup[i].textContent = password[i];
+                }
+            }
         });
     </script>
 </head>
@@ -70,16 +106,16 @@
         </div>
 
         <div class="cell flex-area" style="flex-wrap: wrap;">
-            <div class="outer"><button class="btn btn-neutral btn-number w-100">1</button></div>
-            <div class="outer"><button class="btn btn-neutral btn-number w-100">2</button></div>
-            <div class="outer"><button class="btn btn-neutral btn-number w-100">3</button></div>
-            <div class="outer"><button class="btn btn-neutral btn-number w-100">4</button></div>
-            <div class="outer"><button class="btn btn-neutral btn-number w-100">5</button></div>
-            <div class="outer"><button class="btn btn-neutral btn-number w-100">6</button></div>
-            <div class="outer"><button class="btn btn-neutral btn-number w-100">7</button></div>
-            <div class="outer"><button class="btn btn-neutral btn-number w-100">8</button></div>
-            <div class="outer"><button class="btn btn-neutral btn-number w-100">9</button></div>
-            <div class="outer"><button class="btn btn-neutral btn-number w-100">0</button></div>
+            <div class="outer"><button class="btn btn-positive btn-number w-100">1</button></div>
+            <div class="outer"><button class="btn btn-positive btn-number w-100">2</button></div>
+            <div class="outer"><button class="btn btn-positive btn-number w-100">3</button></div>
+            <div class="outer"><button class="btn btn-positive btn-number w-100">4</button></div>
+            <div class="outer"><button class="btn btn-positive btn-number w-100">5</button></div>
+            <div class="outer"><button class="btn btn-positive btn-number w-100">6</button></div>
+            <div class="outer"><button class="btn btn-positive btn-number w-100">7</button></div>
+            <div class="outer"><button class="btn btn-positive btn-number w-100">8</button></div>
+            <div class="outer"><button class="btn btn-positive btn-number w-100">9</button></div>
+            <div class="outer"><button class="btn btn-positive btn-number w-100">0</button></div>
             <div class="outer"><button class="btn btn-neutral btn-number w-100"></button></div>
             <div class="outer"><button class="btn btn-neutral btn-number w-100"></button></div>
             <div class="outer"><button class="btn btn-neutral btn-number w-100"></button></div>
@@ -89,9 +125,21 @@
         </div>
 
         <div class="cell">
-            <button type="button" class="btn btn-negative btn-shuffle w-100">
+            <button type="button" class="btn btn-neutral btn-shuffle w-100">
                 <i class="fa-solid fa-rotate-right"></i>
                 <span>버튼 재배치</span>
+            </button>
+        </div>
+        <div class="cell">
+            <button type="button" class="btn btn-negative btn-delete w-100">
+                <i class="fa-solid fa-delete-left"></i>
+                <span>한 글자 지우기</span>
+            </button>
+        </div>
+        <div class="cell">
+            <button type="button" class="btn btn-negative btn-clear w-100">
+                <i class="fa-solid fa-rotate-right"></i>
+                <span>다시 입력하기</span>
             </button>
         </div>
     </div>
