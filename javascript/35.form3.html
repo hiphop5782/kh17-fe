@@ -57,7 +57,9 @@
                 state.countryCapitalValid = valid;//state에 보관
             });
             document.querySelector("[name=countryPopulation]").addEventListener("input", function(){
-
+                var regex = /[^0-9]+/g;//g(lobal)를 붙이면 개수 제한 없이 다 적용됨
+                var replacement = this.value.replace(regex, "");
+                this.value = replacement;
             });
             document.querySelector("[name=countryPopulation]").addEventListener("blur", function(){
                 var valid = this.value.length > 0 && parseInt(this.value) > 0;
