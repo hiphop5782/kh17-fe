@@ -27,26 +27,26 @@
                 bookPriceValid : false,//필수항목
                 bookPageCountValid : false,//필수항목
                 bookGenreValid : false,//필수항목
-                //version 1 : 항목 직접 작성
-                // ok : function(){
-                //     return this.bookTitleValid && this.bookAuthorValid
-                //             && this.bookPublisherValid && this.bookPublicationDateValid
-                //             && this.bookPriceValid && this.bookPageCountValid
-                //             && this.bookGenreValid;
-                // }
-                
-                //version 2 : 모든 필드 자동 합산
+                // version 1 : 항목 직접 작성
                 ok : function(){
-                    var keys = Object.keys(this);//객체의 모든 필드를 추출
-                    var result = true;//최초에는 성공이라고 간주
-                    for(var i=0; i < keys.length; i++) {
-                        //keys[i]가 필드명 (함수도 있으니 제거해야함)
-                        if(typeof this[keys[i]] == "function") continue;//함수면 skip
-
-                        result = result && this[keys[i]];//현재 항목의 결과를 result에 합산
-                    }
-                    return result;
+                    return this.bookTitleValid && this.bookAuthorValid
+                            && this.bookPublisherValid && this.bookPublicationDateValid
+                            && this.bookPriceValid && this.bookPageCountValid
+                            && this.bookGenreValid;
                 }
+                
+                // version 2 : 모든 필드 자동 합산
+                // ok : function(){
+                //     var keys = Object.keys(this);//객체의 모든 필드를 추출
+                //     var result = true;//최초에는 성공이라고 간주
+                //     for(var i=0; i < keys.length; i++) {
+                //         //keys[i]가 필드명 (함수도 있으니 제거해야함)
+                //         if(typeof this[keys[i]] == "function") continue;//함수면 skip
+
+                //         result = result && this[keys[i]];//현재 항목의 결과를 result에 합산
+                //     }
+                //     return result;
+                // }
             };
 
             //개별 항목 처리
