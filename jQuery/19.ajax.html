@@ -63,7 +63,13 @@
                 if(valid == false) return;
 
                 $.ajax({
-                    url : "http://localhost:8080/rest/test/check?memberId="+memberId,
+                    //GET
+                    //url : "http://localhost:8080/rest/test/check?memberId="+memberId,
+
+                    //POST
+                    url : "http://localhost:8080/rest/test/check",
+                    method : "post",
+                    data : { memberId : memberId },//왼쪽이 이름, 오른쪽이 데이터 { key : value }
                     success : function(response) {
                         $(".result4").text(response);
                         console.log(response);
