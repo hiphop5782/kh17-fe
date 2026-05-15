@@ -71,12 +71,13 @@
 
             //항목 검사
             $("[name=memberId]").on("blur", function(){
-                //this는 아이디 입력창
+                //this는 아이디 입력창이지만 ajax 등 함수가 많으니 가급적 사용을 자제하겠다 (혼동우려)
                 var regex = /^[a-z][a-z0-9]{4,19}$/;
                 var memberId = $("[name=memberId]").val();
                 var valid = regex.test(memberId);
                 if(valid == false) {//형식 오류 먼저 제거
-                    $("[name=memberId]").removeClass("success fail").addClass("fail");//실패 표시
+                    $("[name=memberId]").removeClass("success fail")
+                        .addClass("fail").attr("data-error", "1");//실패 표시(1번 에러)
                     state.memberIdValid = false;
                     return;
                 }
@@ -92,7 +93,8 @@
                             state.memberIdValid = true;
                         }
                         else {//사용중인 아이디
-                            $("[name=memberId]").removeClass("success fail").addClass("fail");
+                            $("[name=memberId]").removeClass("success fail")
+                                .addClass("fail").attr("data-error", "2");//실패(에러2번)
                             state.memberIdValid = false;
                         }
                     }
@@ -256,8 +258,8 @@
             <input type="text" name="memberId" class="field w-100">
             <div class="success-feedback">사용할 수 있는 아이디입니다</div>
             <div class="fail-feedback">
-                아이디가 사용중이거나
-                영문 소문자로 시작하고 숫자를 포함해 5~20글자로 작성하세요                
+                <div>영문 소문자로 시작하고 숫자를 포함해 5~20글자로 작성하세요</div>
+                <div>아이디가 이미 사용중입니다</div>
             </div>
         </div>
 
