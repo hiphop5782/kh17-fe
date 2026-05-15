@@ -117,15 +117,64 @@
             });
             $("[name=memberEmail]").on("blur", function(){
                 var regex = /^([a-z][a-z0-9]{4,19})@([A-Za-z0-9\-\.]{1,})(\.[a-z]{2,3})$/;
-                var valid = regex.test($(this).val());
+                var valid = regex.test($("[name=memberEmail]").val());
+                if(valid == false) {//형식 오류
+                    $("[name=memberEmail]").removeClass("success fail")
+                            .addClass("fail").attr("data-error", "1");//실패(에러1번)
+                    state.memberEmailValid = false;
+                    return;
+                }
+
+                $.ajax({
+                    url: "http://localhost:8080/rest/member/validEmail",
+                    method: "post",
+                    data: { memberEmail : $("[name=memberEmail]").val() },
+                    success: function(response){//사용가능(true), 사용중(false)
+                        if(response === true) {
+                            $("[name=memberEmail").removeClass("success fail")
+                                    .addClass("success");
+                            state.memberEmailValid = true;
+                            $(".btn-cert-send").fadeIn();//인증메일 전송버튼 표시
+                        }
+                        else {
+                            $("[name=memberEmail").removeClass("success fail")
+                                    .addClass("fail").attr("data-error", "2");
+                            state.memberEmailValid = false;
+                        }
+                    }
+                });
+
                 $(this).removeClass("success fail").addClass(valid ? "success" : "fail");
                 state.memberEmailValid = valid;
             });
             $("[name=memberNickname]").on("blur", function(){
                 var regex = /^[가-힣A-Za-z0-9]{1,10}$/;
-                var valid = regex.test($(this).val());
-                $(this).removeClass("success fail").addClass(valid ? "success" : "fail");
-                state.memberNicknameValid = valid;
+                var valid = regex.test($("[name=memberNickname]").val());
+                if(valid == false) {//형식 오류
+                    $("[name=memberNickname]").removeClass("success fail")
+                            .addClass("fail").attr("data-error", "1");//실패(에러1번)
+                    state.memberNicknameValid = false;
+                    return;
+                }
+
+                $.ajax({
+                    url: "http://localhost:8080/rest/member/validNickname",
+                    method: "post",
+                    data: { memberNickname : $("[name=memberNickname]").val() },
+                    success: function(response) {//true(사용가능), false(사용중)
+                        //if(response) {//자바스크립트는 이것을 긍정적인 값으로 해석(1, 'hello' 등도 가능)
+                        //console.log(this);//입력창이 아님
+                        if(response === true) {
+                            $("[name=memberNickname]").removeClass("success fail").addClass("success");
+                            state.memberNicknameValid = true;
+                        }
+                        else {
+                            $("[name=memberNickname]").removeClass("success fail")
+                                    .addClass("fail").attr("data-error", "2");//실패(에러2번)
+                            state.memberNicknameValid = false;
+                        }
+                    }
+                });
             });
             $("[name=memberBirth]").on("blur", function(){
                 var regex = /^([0-9]{4})-(((02)-(0[1-9]|1[0-9]|2[0-9]))|((0[469]|11)-(0[1-9]|1[0-9]|2[0-9]|30))|((0[13578]|1[02])-(0[1-9]|1[0-9]|2[0-9]|3[01])))$/;
@@ -287,18 +336,31 @@
             <div class="fail-feedback">비밀번호를 입력하시거나 일치하지 않습니다</div>
         </div>
 
-        <div class="cell">
+        <div class="cell mb-0">
             <label>이메일 <i class="fa-solid fa-asterisk red"></i></label>
-            <input type="text" inputmode="email" name="memberEmail" class="field w-100">
-            <div class="success-feedback">사용할 수 있는 이메일입니다!</div>
-            <div class="fail-feedback">이미 사용중이거나 사용할 수 없는 이메일입니다</div>
+        </div>
+        <div class="cell mt-0 flex-area" style="flex-wrap: wrap;">
+            <input type="text" inputmode="email" name="memberEmail" class="field">
+            <button type="button" class="btn btn-neutral btn-cert-send ms-10"
+                    style="display: none;">
+                <i class="fa-solid fa-envelope"></i>
+                <span>인증메일 보내기</span>
+            </button>
+            <div class="success-feedback w-100">사용할 수 있는 이메일입니다!</div>
+            <div class="fail-feedback w-100">
+                <div>올바른 이메일 형식이 아닙니다</div>
+                <div>이미 사용중인 이메일입니다</div>
+            </div>
         </div>
 
         <div class="cell">
             <label>닉네임 <i class="fa-solid fa-asterisk red"></i></label>
             <input type="text" name="memberNickname" class="field w-100">
             <div class="success-feedback">사용할 수 있는 닉네임입니다!</div>
-            <div class="fail-feedback">이미 사용중이거나 사용할 수 없는 닉네임입니다</div>
+            <div class="fail-feedback">
+                <div>닉네임은 한글 또는 영문, 숫자 10글자 이내로 작성하세요.</div>
+                <div>닉네임이 이미 사용중입니다. 다른 닉네임을 입력하세요.</div>
+            </div>
         </div>
 
         <div class="cell">
