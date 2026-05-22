@@ -349,9 +349,11 @@
                             state.memberEmailCertValid = true;
                             $("[name=memberEmail]").removeClass("success fail").addClass("success");
                             $(".cert-area").empty();
-                            $(".btn-cert-send").find("i").removeClass("fa-envelope")
-                                            .addClass("fa-rotate-right");
-                            $(".btn-cert-send").find("span").text("다시 인증하기");
+                            $(".btn-cert-send").hide();//전송버튼 숨김
+                            $(".btn-cert-retry").show();//다시버튼 표시
+
+                            //입력창을 더이상 고치지 못하도록 잠금처리
+                            $("[name=memberEmail]").prop("readonly", true);
                         }
                         else {
                             state.memberEmailCertValid = false;
@@ -359,6 +361,18 @@
                         }
                     }
                 });
+            });
+        
+            //다시 인증하기 버튼
+            $(".btn-cert-retry").on("click", function(){
+                $(".btn-cert-retry").hide();
+                $(".btn-cert-send").show();
+                $("[name=memberEmail]").removeClass("success fail")
+                                        .prop("readonly", false).val("");
+                state.memberEmailValid = false;
+                state.memberEmailCertValid = false;
+                
+                $("[name=memberEmail]").trigger("focus");//커서도 제가 옮겨드릴게요~ 고객님~
             });
         });
     </script>
@@ -428,6 +442,11 @@
             <button type="button" class="btn btn-neutral btn-cert-send ms-10">
                 <i class="fa-solid fa-envelope"></i>
                 <span>인증메일 보내기</span>
+            </button>
+            <button type="button" class="btn btn-negative btn-cert-retry ms-10"
+                    style="display: none;">
+                <i class="fa-solid fa-rotate-right"></i>
+                <span>다시 인증하기</span>
             </button>
             <div class="success-feedback w-100">사용할 수 있는 이메일입니다!</div>
             <div class="fail-feedback w-100">
