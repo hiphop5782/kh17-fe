@@ -57,7 +57,7 @@
                 memberPasswordValid : false,
                 memberPasswordCheckValid : false,
                 memberEmailValid : false,//형식과 중복검사를 통과했는지
-                memberEmailCertValid : false,//인증을 통과했는지
+
                 memberNicknameValid : false,
                 memberBirthValid : true,//선택 항목
                 memberContactValid : true,//선택 항목
@@ -299,10 +299,10 @@
                     method:"post",
                     data: { certEmail : memberEmail },
                     success: function(){//성공 시 실행될 함수
-                        //console.log("이메일 발송 완료");
-                        var template = $("#cert-template").text();
-                        var content = $.parseHTML(template);
-                        $(".cert-area").html(content);
+                        window.alert("인증 메일이 발송되었습니다");
+                        // var template = $("#cert-template").text();
+                        // var content = $.parseHTML(template);
+                        // $(".cert-area").html(content);
                     },
                     error:function(){//실패 시 실행될 함수
                         window.alert("이메일 발송에 실패했습니다.\n잠시 후 다시 시도해보세요");
@@ -327,54 +327,6 @@
                 });
             });
         
-            //인증번호 검사 버튼(.btn-cert-check)을 누르면 ajax요청을 보내 번호 진위를 확인
-            //- 이 버튼은 언제 생길지 모르는 동적 화면
-            //$(".btn-cert-check").on("click", function(){});//안됨
-            $(".cert-area").on("click", ".btn-cert-check", function(){//가능
-                //이메일과 인증번호를 구해와서 ajax 요청을 보낸 뒤 응답에 따른 처리를 구현
-                var certEmail = $("[name=memberEmail]").val();
-
-                var certNumber = $(".field-cert").val();
-                var certRegex = /^[0-9]{6}$/;
-                var certValid = certRegex.test(certNumber);
-                if(certValid == false) {//인증번호가 형식에 맞지 않으면
-                    return;
-                }
-
-                $.ajax({
-                    url:"http://localhost:8080/rest/cert/check",
-                    method:"post",
-                    data: { certEmail : certEmail , certNumber : certNumber },
-                    success: function(response) {//response는 true 아니면 false
-                        if(response === true) {//결과가 정확히 true라면 → 이메일에 success처리, 인증화면삭제
-                            state.memberEmailCertValid = true;
-                            $("[name=memberEmail]").removeClass("success fail").addClass("success");
-                            $(".cert-area").empty();
-                            $(".btn-cert-send").hide();//전송버튼 숨김
-                            $(".btn-cert-retry").show();//다시버튼 표시
-
-                            //입력창을 더이상 고치지 못하도록 잠금처리
-                            $("[name=memberEmail]").prop("readonly", true);
-                        }
-                        else {
-                            state.memberEmailCertValid = false;
-                            $(".field-cert").addClass("fail");
-                        }
-                    }
-                });
-            });
-        
-            //다시 인증하기 버튼
-            $(".btn-cert-retry").on("click", function(){
-                $(".btn-cert-retry").hide();
-                $(".btn-cert-send").show();
-                $("[name=memberEmail]").removeClass("success fail")
-                                        .prop("readonly", false).val("");
-                state.memberEmailValid = false;
-                state.memberEmailCertValid = false;
-                
-                $("[name=memberEmail]").trigger("focus");//커서도 제가 옮겨드릴게요~ 고객님~
-            });
         });
     </script>
 
@@ -444,19 +396,12 @@
                 <i class="fa-solid fa-envelope"></i>
                 <span>인증메일 보내기</span>
             </button>
-            <button type="button" class="btn btn-negative btn-cert-retry ms-10"
-                    style="display: none;">
-                <i class="fa-solid fa-rotate-right"></i>
-                <span>다시 인증하기</span>
-            </button>
-            <div class="success-feedback w-100">사용할 수 있는 이메일입니다!</div>
+            <div class="success-feedback w-100"></div>
             <div class="fail-feedback w-100">
                 <div>올바른 이메일 형식이 아닙니다</div>
                 <div>이미 사용중인 이메일입니다</div>
             </div>
         </div>
-        <!-- 인증번호 입력 영역 -->
-        <div class="cell cert-area"></div>
 
         <div class="cell">
             <label>닉네임 <i class="fa-solid fa-asterisk red"></i></label>
