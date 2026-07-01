@@ -2,6 +2,7 @@ import { useCallback, useState } from "react"
 import './App.css'
 import Jumbotron from "./components/Jumbotron"//.jsx 생략
 import Exam01 from "./components/Exam01"
+import Exam02 from "./components/Exam02"
 
 function App() {
 
@@ -14,7 +15,7 @@ function App() {
 
     <hr/>
 
-    {/* <Exam02/> */}
+    <Exam02/>
 
   </div>
   )
