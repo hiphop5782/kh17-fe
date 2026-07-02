@@ -9,9 +9,9 @@ import Exam03_1 from "./components/Exam03_1"
 import Exam04 from "./components/Exam04"
 import Exam05 from "./components/Exam05"
 
-function App() {
+import { ToastContainer, Bounce } from "react-toastify";
 
-  
+function App() {
 
   return (
   <div className="container my-5">
@@ -28,6 +28,21 @@ function App() {
     <Exam04/>
     <hr/>
     <Exam05/>
+
+    {/* React Toastify Container */}
+    <ToastContainer
+      position="bottom-right"
+      autoClose={5000}
+      hideProgressBar={false}
+      newestOnTop={false}
+      closeOnClick={false}
+      rtl={false}
+      pauseOnFocusLoss
+      draggable
+      pauseOnHover
+      theme="colored"
+      transition={Bounce}
+      />
   </div>
   )
 }
