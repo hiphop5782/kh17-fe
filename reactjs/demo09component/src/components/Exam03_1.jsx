@@ -18,7 +18,13 @@ function Exam03_1() {
     });
 
     //memo - state를 이용해서 추가적으로 계산해내는 데이터 (연관항목을 적어 실행 최소화)
-
+    const valid = useMemo(()=>{
+        if(result.countryRegion !== "is-valid") return false;
+        if(result.countryName !== "is-valid") return false;
+        if(result.countryCapital !== "is-valid") return false;
+        if(result.countryPopulation !== "is-valid") return false;
+        return true;
+    }, [result]);
     
     //callback - 호출 가능한 함수 (연관항목을 적어 갱신 최소화)
     const changeStringValue = useCallback((e)=>{
@@ -146,7 +152,7 @@ function Exam03_1() {
 
         <div className="row mt-5">
             <div className="col">
-                <button type="button" className="btn btn-success w-100">
+                <button type="button" className="btn btn-success w-100" disabled={valid === false}>
                     등록하기
                 </button>
             </div>
