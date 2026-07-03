@@ -11,6 +11,7 @@ import Exam05 from "./components/Exam05"
 
 import { ToastContainer, Bounce } from "react-toastify";
 import Exam06 from "./components/Exam06"
+import Exam07 from "./components/Exam07"
 
 function App() {
 
@@ -31,6 +32,8 @@ function App() {
     <Exam05/>
     <hr/>
     <Exam06/>
+    <hr/>
+    <Exam07/>
 
     {/* React Toastify Container */}
     <ToastContainer
