@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Jumbotron from "./Jumbotron";
 import { FaAsterisk, FaPlus } from "react-icons/fa6";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 function Exam05() {
     //state
@@ -88,6 +90,38 @@ function Exam05() {
             bookGenre: valid ? "is-valid" : "is-invalid"
         });
     }, [book, result]);
+    const clear = useCallback(()=>{
+        setBook({
+            bookTitle:"",
+            bookAuthor:"",
+            bookPublisher:"",
+            bookPublicationDate:"",
+            bookPrice:0,
+            bookPageCount:0,
+            bookGenre:"",
+        });
+        setResult({
+            bookTitle:null,
+            bookAuthor:null,
+            bookPublisher:null,
+            bookPublicationDate:null,
+            bookPrice:null,
+            bookPageCount:null,
+            bookGenre:null,
+        });
+    }, []);
+
+    const send = useCallback(()=>{
+        axios({
+            url:"http://localhost:8080/api/book/insert",
+            method:"post",
+            data:book
+        })
+        .then(response=>{
+            toast.success("도서 등록 완료");
+            clear();
+        });
+    }, [book]);
 
     //effect
     useEffect(()=>{
@@ -99,6 +133,14 @@ function Exam05() {
     
     //memo
     const allValid = useMemo(()=>{
+        if(result.bookTitle !== "is-valid") return false;
+        if(result.bookAuthor === "is-invalid") return false;
+        if(result.bookPublisher === "is-invalid") return false;
+        if(result.bookPublicationDate === "is-invalid") return false;
+        if(result.bookPrice !== "is-valid") return false;
+        if(result.bookPageCount !== "is-valid") return false;
+        if(result.bookGenre !== "is-valid") return false;
+
         return true;
     }, [result]);
 
@@ -210,7 +252,8 @@ function Exam05() {
 
         <div className="row mt-5">
             <div className="col text-end">
-                <button className="btn btn-success btn-lg">
+                <button className="btn btn-success btn-lg" disabled={!allValid}
+                        onClick={send}>
                     <FaPlus className="me-2"/>
                     <span>등록하기</span>
                 </button>
