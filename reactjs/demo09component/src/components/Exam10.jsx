@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import Jumbotron from "./Jumbotron";
 import axios from "axios";
 import { FaChevronDown } from "react-icons/fa6";
+import { ClockLoader } from "react-spinners";
 
 
 function Exam10() {
@@ -9,6 +10,7 @@ function Exam10() {
     const [countryList, setCountryList] = useState([]);
     const [last, setLast] = useState(false);
     const [size, setSize] = useState(10);
+    const [loading, setLoading] = useState(false);
     
     //effect
     useEffect(()=>{
@@ -17,6 +19,10 @@ function Exam10() {
     
     //callback
     const loadMoreList = useCallback(()=>{
+        //이미 로딩중이면 차단
+        if(loading === true) return;
+        setLoading(true);
+
         const dataSize = countryList.length;
         const lastCountryNo = dataSize === 0 ? 0 : countryList[dataSize-1].countryNo;
 
@@ -33,7 +39,8 @@ function Exam10() {
             //setCountryList(response.data.list);//덮어쓰기
             setCountryList([...countryList, ...response.data.list]);//이어쓰기
             setLast(response.data.last);
-        });
+        })
+        .finally(()=>setLoading(false));
     }, [countryList, size]);
 
     //view
@@ -42,7 +49,8 @@ function Exam10() {
 
         <div className="row mt-4">
             <div className="col">
-                <select value={size} onChange={e=>setSize(parseInt(e.target.value))}>
+                <select value={size} onChange={e=>setSize(parseInt(e.target.value))}
+                        className="form-select w-auto">
                     <option value="5">5개씩 보기</option>
                     <option value="10">10개씩 보기</option>
                     <option value="20">20개씩 보기</option>
@@ -90,6 +98,18 @@ function Exam10() {
                     <span className="mx-2">더보기</span>
                     <FaChevronDown/>
                 </button>
+            </div>
+        </div>
+        ) }
+
+        {/* 로딩화면 */}
+        { loading === true && (
+        <div className="position-fixed top-0 start-0 
+                        w-100 h-100 bg-dark bg-opacity-25
+                        d-flex justify-content-center align-items-center">
+            <div className="d-flex flex-column text-center">
+                <ClockLoader size={75} loading={loading}/>
+                <p className="mt-2">불러오는중</p>
             </div>
         </div>
         ) }
