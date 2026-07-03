@@ -3,6 +3,7 @@ import Jumbotron from "./Jumbotron";
 import { FaAsterisk, FaPlus } from "react-icons/fa6";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { ClockLoader } from "react-spinners";
 
 function Exam05() {
     //state
@@ -24,6 +25,7 @@ function Exam05() {
         bookPageCount:null,
         bookGenre:null,
     });
+    const [loading, setLoading] = useState(false);    
 
     //callback
     const changeStringValue = useCallback(e=>{
@@ -112,6 +114,9 @@ function Exam05() {
     }, []);
 
     const send = useCallback(()=>{
+        //로딩 상태로 변경
+        setLoading(true);
+
         axios({
             url:"http://localhost:8080/api/book/insert",
             method:"post",
@@ -120,6 +125,9 @@ function Exam05() {
         .then(response=>{
             toast.success("도서 등록 완료");
             clear();
+        })
+        .finally(()=>{//성공실패 관계없이 무조건 실행
+            setLoading(false);
         });
     }, [book]);
 
@@ -259,6 +267,21 @@ function Exam05() {
                 </button>
             </div>
         </div>
+
+        {/* 로딩상태 (loading === true) 일 때 보여질 화면 */}
+        {/* { loading === true ? <h1>로딩중</h1> : false } */}
+        {/* { loading === true && <h1>로딩중</h1> } */}
+        { loading === true && (
+        <div className="position-fixed top-0 start-0 
+                        w-100 h-100 bg-dark bg-opacity-25
+                        d-flex justify-content-center align-items-center">
+            <div className="d-flex flex-column text-center">
+                <ClockLoader size={75} loading={loading}/>
+                <p className="mt-2">등록중</p>
+            </div>
+        </div>
+        ) }
+        
     </>)
 }
 
