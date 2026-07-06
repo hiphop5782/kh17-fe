@@ -3,11 +3,12 @@ import { useCallback, useEffect, useState } from "react";
 import axios from "axios";
 import { FaChevronDown } from "react-icons/fa6";
 import { ClockLoader } from "react-spinners";
-import Row from "react-bootstrap/esm/Row";
-import Col from "react-bootstrap/esm/Col";
-import Form from "react-bootstrap/esm/Form";
-import Table from "react-bootstrap/esm/Table";
-import Button from "react-bootstrap/esm/Button";
+// import Row from "react-bootstrap/esm/Row";
+// import Col from "react-bootstrap/esm/Col";
+// import Form from "react-bootstrap/esm/Form";
+// import Table from "react-bootstrap/esm/Table";
+// import Button from "react-bootstrap/esm/Button";
+import { Row, Col, Form, Table, Button } from "react-bootstrap";
 
 export default function CountryList() {
     //state
