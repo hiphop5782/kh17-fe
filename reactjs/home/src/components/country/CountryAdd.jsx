@@ -157,7 +157,7 @@ export default function CountryAdd() {
                 <Form.Control type="text" name="countryPopulation" value={country.countryPopulation}
                         onChange={changeNumericValue} 
                         onBlur={checkCountryPopulation}
-                        className={`form-control ${result.countryPopulation}`}/>
+                        className={result.countryPopulation}/>
                 <div className="valid-feedback">인구가 설정되었습니다</div>
                 <div className="invalid-feedback">인구는 0보다 커야 합니다</div>
             </Col>
