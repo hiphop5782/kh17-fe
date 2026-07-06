@@ -1,10 +1,13 @@
-import { Navigate, useParams } from "react-router-dom";
+import { Link, Navigate, useNavigate, useParams } from "react-router-dom";
 import Jumbotron from "../../templates/Jumbotron";
 import { useState } from "react";
 import { useEffect } from "react";
 import axios from "axios";
 import { Button, Col, Row } from "react-bootstrap";
 import { FaList, FaPenToSquare, FaTrash } from "react-icons/fa6";
+import { useCallback } from "react";
+import { toast } from "react-toastify";
+import Swal from "sweetalert2";
 
 export default function CountryDetail() {
     // Route에 선언된 파라미터 변수를 읽으려면 useParams()를 사용해야 한다
@@ -19,6 +22,8 @@ export default function CountryDetail() {
         return <Navigate to="/country/list" replace/>;
     }
 
+    const navigate = useNavigate();
+
     //countryNo가 정상적인 숫자인 경우의 처리내용 작성
     const [country, setCountry] = useState(null);
     useEffect(()=>{
@@ -31,6 +36,35 @@ export default function CountryDetail() {
             setCountry(response.data);
         });
     }, []);
+
+    const deleteCountry = useCallback(()=>{
+        // const choice = window.confirm("정말 삭제하시겠습니까?\n삭제 후에는 복구가 안됩니다");
+        // if(choice === false) return;
+        Swal.fire({
+            title:"정말 삭제하시겠습니까?",
+            text:"삭제한 데이터는 복구하실 수 없습니다",
+            icon:"warning",
+            showCancelButton:true,
+            confirmButtonText:"삭제",
+            cancelButtonText:"취소",
+            confirmButtonColor:"#d63031",
+            cancelButtonColor:"#b2bec3"
+        })
+        .then(result=>{
+            if(result.isConfirmed) {
+                axios({
+                    url:"http://localhost:8080/api/country/delete",
+                    method:"get",
+                    params:{ countryNo : countryNo }
+                })
+                .then(response=>{
+                    toast.error("국가 삭제가 완료되었습니다");
+                    navigate("/country/list");
+                });
+            }
+        });
+        
+    }, [countryNo]);
 
     return (<>
         <Jumbotron title="국가 상세 정보" content={`${countryNo}번 국가의 상세 정보 화면입니다`}/>
@@ -74,7 +108,7 @@ export default function CountryDetail() {
 
         <Row className="mt-5">
             <Col className="text-end">
-                <Button className="ms-2" variant="danger">
+                <Button className="ms-2" variant="danger" onClick={deleteCountry}>
                     <FaTrash className="me-2"/>
                     <span>삭제하기</span>
                 </Button>
@@ -82,7 +116,8 @@ export default function CountryDetail() {
                     <FaPenToSquare className="me-2"/>
                     <span>수정하기</span>
                 </Button>
-                <Button className="ms-2" variant="secondary">
+                <Button className="ms-2" variant="secondary"
+                        as={Link} to="/country/list">
                     <FaList className="me-2"/>
                     <span>목록으로</span>
                 </Button>
