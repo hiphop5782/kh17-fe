@@ -7,7 +7,7 @@ import { Link } from "react-router-dom";
 export default function Menu() {
 
     return (<>
-        <Navbar expand="md" className="bg-body-tertiary"
+        <Navbar expand="md" className="bg-body-tertiary sticky-top"
                     bg="dark" data-bs-theme="dark">
             {/* 메뉴 메인 컨테이너 */}
             <Container fluid>
@@ -39,6 +39,6 @@ export default function Menu() {
                     </Nav>
                 </Navbar.Collapse>
             </Container>
-            </Navbar>
+        </Navbar>
     </>)
 }

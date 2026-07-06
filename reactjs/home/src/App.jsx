@@ -23,7 +23,7 @@ export default function App() {
       <Menu/>
 
       {/* 본문 */}
-      <Row>
+      <Row className="mt-4" style={ { minHeight: 450 } }>
         <Col>
           <Body/>
         </Col>
