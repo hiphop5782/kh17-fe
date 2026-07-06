@@ -2,6 +2,10 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter, HashRouter } from "react-router-dom";
 
+//bootstrap (JS는 불러오지 않음)
+import "bootstrap/dist/css/bootstrap.min.css";
+import "bootswatch/dist/flatly/bootstrap.min.css";
+
 import './index.css'
 import App from './App.jsx'
 
