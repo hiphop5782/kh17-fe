@@ -93,7 +93,11 @@ export default function CountryList() {
                         {countryList.map(country=>(
                         <tr key={country.countryNo}>
                             <td>{country.countryNo}</td>
-                            <td>{country.countryName}</td>
+                            <td>
+                                <Link to={`/country/detail/${country.countryNo}`}>
+                                    {country.countryName}
+                                </Link>
+                            </td>
                             <td>{country.countryRegion}</td>
                             <td>{country.countryCapital}</td>
                             <td className="text-end">{country.countryPopulation.toLocaleString()}</td>
