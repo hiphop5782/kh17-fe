@@ -4,6 +4,7 @@ import CountryList from "../components/country/CountryList";
 import LectureList from "../components/lecture/LectureList";
 import Home from "../components/Home";
 import NotFound from "../error/NotFound";
+import CountryAdd from "../components/country/CountryAdd";
 
 
 export default function Body() {
@@ -11,8 +12,12 @@ export default function Body() {
     return (
     <Routes>
         <Route path="/" element={<Home/>}/>
+        
         <Route path="/country/list" element={<CountryList/>}/>
+        <Route path="/country/add" element={<CountryAdd/>}/>
+        
         <Route path="/lecture/list" element={<LectureList/>}/>
+        
         <Route path="/book/list" element={<BookList/>}/>
 
         {/* fallback route */}
