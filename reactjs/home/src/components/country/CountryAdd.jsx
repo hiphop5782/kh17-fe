@@ -2,6 +2,9 @@ import { Row, Col, Form, Button } from "react-bootstrap";
 import Jumbotron from "../../templates/Jumbotron";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { FaAsterisk, FaPlus } from "react-icons/fa6";
+import axios from "axios";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 export default function CountryAdd() {
     //state - 역동적인 화면을 만들기 위한 핵심데이터
@@ -18,6 +21,9 @@ export default function CountryAdd() {
         countryCapital : "",
         countryPopulation : ""
     });
+
+    //페이지 이동 도구 (location 대신 사용)
+    const navigate = useNavigate();
 
     //memo - state를 이용해서 추가적으로 계산해내는 데이터 (연관항목을 적어 실행 최소화)
     const valid = useMemo(()=>{
@@ -41,7 +47,7 @@ export default function CountryAdd() {
         const { name , value } = e.target;
         const regex = /[^0-9]/g;
         const replacement = value.replace(regex, "");//숫자가 아닌 요소를 제거
-        const result = parseInt(replacement);//숫자로 변환
+        const result = parseInt(replacement || 0);//숫자로 변환
         
         setCountry({
             ...country,//나머지 유지
@@ -92,6 +98,27 @@ export default function CountryAdd() {
         //검사함수를 실행하세요
         checkCountryRegion();
     }, [country.countryRegion, result.countryRegion]);
+
+    //데이터 전송 함수
+    const send = useCallback(()=>{
+        axios({
+            url:"http://localhost:8080/api/country/insert",
+            method:"post",
+            data: country
+        })
+        .then(response=>{
+            //과거 예제에서는 등록이 완료되면 알림창 + 입력 데이터 및 클래스 청소를 했었다
+            //지금은 페이지가 분할되어 있기 때문에 알림창 + 페이지 이동을 하면 된다
+            toast.success("국가 등록이 완료되었습니다");
+
+            //리액트에서는 이동을 location.href로 할 수 없다(되는데 안하는게 좋음)
+            //상단에 useNavigate()를 이용해서 도구를 생성하고 그 도구를 사용하여 이동
+            //navigate("이동할 페이지");
+            navigate("/country/list");
+        })
+        //.catch(err=>{})
+        //.finally(()=>{})
+    }, [country]);
 
     return (<>
         <Jumbotron title="신규 국가 등록"/>
@@ -155,7 +182,7 @@ export default function CountryAdd() {
             </Form.Label>
             <Col sm={9}>
                 <Form.Control type="text" name="countryPopulation" value={country.countryPopulation}
-                        onChange={changeNumericValue} 
+                        onChange={changeNumericValue}
                         onBlur={checkCountryPopulation}
                         className={result.countryPopulation}/>
                 <div className="valid-feedback">인구가 설정되었습니다</div>
@@ -165,7 +192,8 @@ export default function CountryAdd() {
 
         <Row className="mt-5">
             <Col>
-                <Button type="button" variant="success" className="w-100" disabled={valid === false}>
+                <Button type="button" variant="success" className="w-100" 
+                    disabled={valid === false} onClick={send}>
                     <FaPlus className="me-2"/>
                     <span>등록하기</span>
                 </Button>
