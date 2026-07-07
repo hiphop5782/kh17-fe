@@ -1,10 +1,12 @@
-import { Link, Navigate, useParams } from "react-router-dom";
+import { Link, Navigate, useNavigate, useParams } from "react-router-dom";
 import Jumbotron from "../../templates/Jumbotron";
 import { useState } from "react";
 import { useEffect } from "react";
 import { useCallback } from "react";
 import axios from "axios";
 import { Button, Col, Row } from "react-bootstrap";
+import Swal from "sweetalert2";
+import { toast } from "react-toastify";
 
 
 export default function LectureDetail() {
@@ -44,6 +46,26 @@ export default function LectureDetail() {
         const response = await axios.get(`http://localhost:8080/api/lecture/detail/${lectureNo}`);
         setLecture(response.data);
     }, []);
+
+    //삭제 함수 (async+await)
+    const navigate = useNavigate();
+    const deleteLecture = useCallback(async ()=>{
+        const result = await Swal.fire({
+            title:"정말 삭제하시겠습니까?",
+            text:"삭제한 데이터는 복구하실 수 없습니다",
+            icon:"warning",
+            showCancelButton:true,
+            confirmButtonText:"삭제",
+            cancelButtonText:"취소",
+            confirmButtonColor:"#d63031",
+            cancelButtonColor:"#b2bec3"
+        });
+        if(result.isConfirmed === false) return;
+
+        const response = await axios.get(`http://localhost:8080/api/lecture/delete/${lectureNo}`);
+        toast.error("강좌 삭제가 완료되었습니다");
+        navigate("/lecture/list");
+    }, [lectureNo]);
 
 
     return (<>
@@ -95,7 +117,7 @@ export default function LectureDetail() {
 
             <Row className="mt-5">
                 <Col className="text-end">
-                    <Button className="ms-2" variant="danger">삭제하기</Button>
+                    <Button className="ms-2" variant="danger" onClick={deleteLecture}>삭제하기</Button>
                     <Button className="ms-2" variant="warning">수정하기</Button>
                     <Button className="ms-2" variant="secondary" as={Link} to={"/lecture/list"}>목록으로</Button>
                 </Col>
