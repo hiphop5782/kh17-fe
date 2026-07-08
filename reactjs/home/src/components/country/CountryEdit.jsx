@@ -1,9 +1,10 @@
 import axios from "axios";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { FaAsterisk, FaPlus } from "react-icons/fa6";
+import { FaAsterisk, FaList, FaPlus, FaSquarePen, FaXmark } from "react-icons/fa6";
 import { toast } from "react-toastify";
-import { Navigate, useNavigate, useParams } from "react-router-dom";
+import { Link, Navigate, useNavigate, useParams } from "react-router-dom";
 import { Row, Col, Form, Button } from "react-bootstrap";
+import Jumbotron from "../../templates/Jumbotron";
 
 export default function CountryEdit() {
     const { countryNo } = useParams();
@@ -13,7 +14,12 @@ export default function CountryEdit() {
 
     const navigate = useNavigate();
 
-    const [country, setCountry] = useState(null);
+    const [country, setCountry] = useState({//입력데이터를 관리하는 state
+        countryRegion: "",
+        countryName : "",
+        countryCapital : "",
+        countryPopulation : 0
+    });
     useEffect(()=>{
         loadData();
     }, []);
@@ -106,13 +112,17 @@ export default function CountryEdit() {
 
     //데이터 전송 함수
     const send = useCallback(async ()=>{
-        const response = await axios.post("http://localhost:8080/api/country/", country);
-        toast.success("국가 등록이 완료되었습니다");
-        navigate("/country/list");
+        const response = await axios.put(
+            `http://localhost:8080/api/country/${countryNo}`, 
+            country
+        );
+        toast.success("국가 정보 변경이 완료되었습니다");
+        //navigate("/country/list");
+        navigate(`/country/detail/${countryNo}`);
     }, [country]);
 
     return (<>
-        <Jumbotron title="신규 국가 등록"/>
+        <Jumbotron title="국가 정보 수정"/>
 
         <Row className="mt-4">
             <Form.Label column sm={3}>
@@ -182,11 +192,19 @@ export default function CountryEdit() {
         </Row>
 
         <Row className="mt-5">
-            <Col>
-                <Button type="button" variant="success" className="w-100" 
+            <Col className="text-end">
+                <Button as={Link} to={`/country/list`} variant="secondary">
+                    <FaList className="me-2"/>
+                    <span>목록으로</span>
+                </Button>
+                <Button as={Link} to={`/country/detail/${countryNo}`} variant="danger" className="ms-2">
+                    <FaXmark className="me-2"/>
+                    <span>취소하기</span>
+                </Button>
+                <Button type="button" variant="success" className="ms-2"
                     disabled={valid === false} onClick={send}>
-                    <FaPlus className="me-2"/>
-                    <span>등록하기</span>
+                    <FaSquarePen className="me-2"/>
+                    <span>수정하기</span>
                 </Button>
             </Col>
         </Row>
