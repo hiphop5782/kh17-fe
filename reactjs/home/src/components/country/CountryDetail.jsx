@@ -209,7 +209,8 @@ export default function CountryDetail() {
                     <FaTrash className="me-2"/>
                     <span>삭제하기</span>
                 </Button>
-                <Button className="ms-2" variant="warning">
+                <Button className="ms-2" variant="warning"
+                        as={Link} to={`/country/edit/${countryNo}`}>
                     <FaPenToSquare className="me-2"/>
                     <span>수정하기</span>
                 </Button>
