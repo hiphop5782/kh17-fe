@@ -1,5 +1,5 @@
 import { Link, Navigate, useNavigate, useParams } from "react-router-dom";
-import Jumbotron from "../../templates/Jumbotron";
+import Jumbotron from "@templates/Jumbotron";
 import { useState } from "react";
 import { useEffect } from "react";
 import { useCallback } from "react";

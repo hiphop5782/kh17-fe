@@ -4,7 +4,7 @@ import { FaAsterisk, FaList, FaPlus, FaSquarePen, FaXmark } from "react-icons/fa
 import { toast } from "react-toastify";
 import { Link, Navigate, useNavigate, useParams } from "react-router-dom";
 import { Row, Col, Form, Button } from "react-bootstrap";
-import Jumbotron from "../../templates/Jumbotron";
+import Jumbotron from "@templates/Jumbotron";
 
 export default function CountryEdit() {
     const { countryNo } = useParams();

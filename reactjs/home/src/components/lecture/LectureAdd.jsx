@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import Swal from 'sweetalert2'
-import Jumbotron from "../../templates/Jumbotron";
+import Jumbotron from "@templates/Jumbotron";
 import { useNavigate } from "react-router-dom";
 
 export default function LectureAdd() {
