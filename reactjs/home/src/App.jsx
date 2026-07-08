@@ -40,13 +40,13 @@ export default function App() {
       {/* react-toastify container */}
       <ToastContainer
         position="bottom-right"
-        autoClose={5000}
-        hideProgressBar={false}
+        autoClose={2000}
+        hideProgressBar={true}
         newestOnTop={false}
-        closeOnClick={false}
+        closeOnClick={true}
         rtl={false}
-        pauseOnFocusLoss
-        draggable
+        // pauseOnFocusLoss
+        // draggable
         pauseOnHover
         theme="colored"
         transition={Bounce}
