@@ -31,7 +31,7 @@ export default function CountryDetail() {
     }, []);
 
     const loadData = useCallback(async ()=>{
-        const response = await axios.get(`http://localhost:8080/api/country/${countryNo}`)
+        const response = await axios.get(`/api/country/${countryNo}`)
         setCountry(response.data);
         setBackup(response.data);
     }, []);
@@ -88,7 +88,7 @@ export default function CountryDetail() {
     //국가명만 변경하는 함수
     const updateCountry = useCallback(async (field)=>{
         const response = await axios.patch(
-            `http://localhost:8080/api/country/${countryNo}`, 
+            `/api/country/${countryNo}`, 
             // {countryName : country.countryName}
             { [field] : country[field] }
         );

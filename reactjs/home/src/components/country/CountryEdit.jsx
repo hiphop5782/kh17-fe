@@ -25,7 +25,7 @@ export default function CountryEdit() {
     }, []);
 
     const loadData = useCallback(async ()=>{
-        const response = await axios.get(`http://localhost:8080/api/country/${countryNo}`)
+        const response = await axios.get(`/api/country/${countryNo}`)
         setCountry(response.data);
     }, []);
 
@@ -113,7 +113,7 @@ export default function CountryEdit() {
     //데이터 전송 함수
     const send = useCallback(async ()=>{
         const response = await axios.put(
-            `http://localhost:8080/api/country/${countryNo}`, 
+            `/api/country/${countryNo}`, 
             country
         );
         toast.success("국가 정보 변경이 완료되었습니다");

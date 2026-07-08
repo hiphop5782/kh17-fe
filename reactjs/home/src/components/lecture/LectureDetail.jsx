@@ -43,7 +43,7 @@ export default function LectureDetail() {
         //     url:`http://localhost:8080/api/lecture/detail/${lectureNo}`,
         //     method:"get"
         // });
-        const response = await axios.get(`http://localhost:8080/api/lecture/detail/${lectureNo}`);
+        const response = await axios.get(`/api/lecture/detail/${lectureNo}`);
         setLecture(response.data);
     }, []);
 
@@ -62,7 +62,7 @@ export default function LectureDetail() {
         });
         if(result.isConfirmed === false) return;
 
-        const response = await axios.get(`http://localhost:8080/api/lecture/delete/${lectureNo}`);
+        const response = await axios.get(`/api/lecture/delete/${lectureNo}`);
         toast.error("강좌 삭제가 완료되었습니다");
         navigate("/lecture/list");
     }, [lectureNo]);

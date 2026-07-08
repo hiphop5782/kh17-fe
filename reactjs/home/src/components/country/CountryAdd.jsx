@@ -101,7 +101,7 @@ export default function CountryAdd() {
 
     //데이터 전송 함수
     const send = useCallback(async ()=>{
-        const response = await axios.post("http://localhost:8080/api/country/", country);
+        const response = await axios.post("/api/country/", country);
         toast.success("국가 등록이 완료되었습니다");
         navigate("/country/list");
     }, [country]);
