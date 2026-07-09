@@ -4,7 +4,7 @@ import { useMemo } from "react";
 import { useEffect } from "react";
 import { useState } from "react";
 import { Badge, Button, Col, Container, Form, ListGroup, Modal, Row } from "react-bootstrap";
-import { FaPlus, FaChevronDown, FaAsterisk, FaXmark, FaPen, FaCheck } from "react-icons/fa6";
+import { FaPlus, FaChevronDown, FaAsterisk, FaXmark, FaPen, FaCheck, FaSquarePen } from "react-icons/fa6";
 import axios from "axios";
 import { toast } from "react-toastify";
 
@@ -196,24 +196,17 @@ export default function BookSpa() {
             })
         ));
     }, [bookList]);
-    const changeBookTitleToEdit = useCallback(index=>{
-        //editMode에서 index 위치를 찾아 bookTitle을 true로 바꾼다
-        setEditMode(editMode.map((mode, idx)=>{
-            if(idx === index) {//내가 찾는 위치면
-                return { ...mode, bookTitle : true }
-            }
-            return { ...mode }
-        }));
-    }, [editMode]);
-    const changeBookTitleToDisplay = useCallback(index=>{
-        //editMode에서 index 위치를 찾아 bookTitle을 true로 바꾼다
-        setEditMode(editMode.map((mode, idx)=>{
-            if(idx === index) {//내가 찾는 위치면
-                return { ...mode, bookTitle : false }
-            }
-            return { ...mode }
-        }));
-    }, [editMode]);
+
+    // 모달을 띄우는 함수
+    const openModal = useCallback(()=>{
+        setModal(true);
+    }, []);
+    const openModalToEdit = useCallback(target=>{
+        //setBook(target);//target이 쳐다보는 대상을 동일하게 쳐다보도록 설정해라 (얕은복사, shallow copy)
+        setBook({...target});//target의 모든 데이터를 복사해서 쳐다보도록 설정해라 (깊은복사, deep copy)
+        openModal();
+    }, []);
+    
 
     return (<>
         <Jumbotron title="도서 CRUD 통합 구현" content="한 페이지에서 CRUD를 모두 처리해봅니다" />
@@ -221,7 +214,7 @@ export default function BookSpa() {
         {/* 등록을 위한 모달을 띄우는 버튼 */}
         <Row className="mt-4">
             <Col className="text-end">
-                <Button variant="success" onClick={e => setModal(true)}>
+                <Button variant="success" onClick={openModal}>
                     <FaPlus />
                     <span>신규 등록</span>
                 </Button>
@@ -232,22 +225,12 @@ export default function BookSpa() {
         <Row className="mt-4">
             <Col>
                 <ListGroup>
-                    {bookList.map((book, index)=>(
+                    {bookList.map(book=>(
                     <ListGroup.Item key={book.bookId}>
                         <div className="p-4">
                             <h2 className="d-flex align-items-end">
                                 <Badge>{book.bookId}</Badge>
-
-                                {editMode[index]?.bookTitle !== true ? (<>
-                                    <span className="ms-2">{book.bookTitle}</span>
-                                    <FaPen className="text-warning ms-2" onClick={e=>changeBookTitleToEdit(index)}/>
-                                </>) : (<>
-                                    <Form.Control type="text" name="bookTitle"
-                                            value={book.bookTitle} className="w-auto"/>
-                                    <FaCheck className="ms-2 text-success"/>
-                                    <FaXmark className="ms-2 text-danger" onClick={e=>changeBookTitleToDisplay(index)}/>
-                                </>) }
-
+                                <span className="ms-2">{book.bookTitle}</span>
                                 <small className="text-muted ms-4 fs-5">{book.bookGenre}</small>
                             </h2>
                             <hr/>
@@ -264,6 +247,10 @@ export default function BookSpa() {
                                     <span>{book.bookPublicationDate} 출간</span>
                                 )}                                
                             </p>
+                            <div className="text-end">
+                                <FaSquarePen className="text-danger" size={36}
+                                        onClick={e=>openModalToEdit(book)}/>
+                            </div>
                         </div>
                     </ListGroup.Item>
                     ))}
