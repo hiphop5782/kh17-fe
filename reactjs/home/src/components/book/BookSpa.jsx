@@ -4,7 +4,7 @@ import { useMemo } from "react";
 import { useEffect } from "react";
 import { useState } from "react";
 import { Badge, Button, Col, Container, Form, ListGroup, Modal, Row } from "react-bootstrap";
-import { FaPlus, FaChevronDown, FaAsterisk, FaXmark } from "react-icons/fa6";
+import { FaPlus, FaChevronDown, FaAsterisk, FaXmark, FaPen, FaCheck } from "react-icons/fa6";
 import axios from "axios";
 import { toast } from "react-toastify";
 
@@ -180,6 +180,41 @@ export default function BookSpa() {
         setBookList(prev=>([response.data, ...prev]));
     }, [book, /*bookList*/]);
 
+
+    //만약 개별항목별로 수정이 가능하게 하려면 목록과 똑같은 상태배열이 있거나, 목록에 상태가 포함되어야 한다
+    const [editMode, setEditMode] = useState([]);
+    useEffect(()=>{
+        setEditMode(bookList.map(
+            book=>({
+                bookTitle : false,
+                bookAuthor : false,
+                bookPublisher : false,
+                bookPublicationDate : false,
+                bookPrice : false,
+                bookPageCount : false,
+                bookGenre : false
+            })
+        ));
+    }, [bookList]);
+    const changeBookTitleToEdit = useCallback(index=>{
+        //editMode에서 index 위치를 찾아 bookTitle을 true로 바꾼다
+        setEditMode(editMode.map((mode, idx)=>{
+            if(idx === index) {//내가 찾는 위치면
+                return { ...mode, bookTitle : true }
+            }
+            return { ...mode }
+        }));
+    }, [editMode]);
+    const changeBookTitleToDisplay = useCallback(index=>{
+        //editMode에서 index 위치를 찾아 bookTitle을 true로 바꾼다
+        setEditMode(editMode.map((mode, idx)=>{
+            if(idx === index) {//내가 찾는 위치면
+                return { ...mode, bookTitle : false }
+            }
+            return { ...mode }
+        }));
+    }, [editMode]);
+
     return (<>
         <Jumbotron title="도서 CRUD 통합 구현" content="한 페이지에서 CRUD를 모두 처리해봅니다" />
 
@@ -197,12 +232,22 @@ export default function BookSpa() {
         <Row className="mt-4">
             <Col>
                 <ListGroup>
-                    {bookList.map(book=>(
+                    {bookList.map((book, index)=>(
                     <ListGroup.Item key={book.bookId}>
                         <div className="p-4">
                             <h2 className="d-flex align-items-end">
                                 <Badge>{book.bookId}</Badge>
-                                <span className="ms-2">{book.bookTitle}</span>
+
+                                {editMode[index]?.bookTitle !== true ? (<>
+                                    <span className="ms-2">{book.bookTitle}</span>
+                                    <FaPen className="text-warning ms-2" onClick={e=>changeBookTitleToEdit(index)}/>
+                                </>) : (<>
+                                    <Form.Control type="text" name="bookTitle"
+                                            value={book.bookTitle} className="w-auto"/>
+                                    <FaCheck className="ms-2 text-success"/>
+                                    <FaXmark className="ms-2 text-danger" onClick={e=>changeBookTitleToDisplay(index)}/>
+                                </>) }
+
                                 <small className="text-muted ms-4 fs-5">{book.bookGenre}</small>
                             </h2>
                             <hr/>
