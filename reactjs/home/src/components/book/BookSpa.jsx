@@ -4,9 +4,10 @@ import { useMemo } from "react";
 import { useEffect } from "react";
 import { useState } from "react";
 import { Badge, Button, Col, Container, Form, ListGroup, Modal, Row } from "react-bootstrap";
-import { FaPlus, FaChevronDown, FaAsterisk, FaXmark, FaPen, FaCheck, FaSquarePen } from "react-icons/fa6";
+import { FaPlus, FaChevronDown, FaAsterisk, FaXmark, FaPen, FaCheck, FaSquarePen, FaTrash } from "react-icons/fa6";
 import axios from "axios";
 import { toast } from "react-toastify";
+import Swal from "sweetalert2";
 
 export default function BookSpa() {
     //모달을 띄우기 위한 state
@@ -274,6 +275,28 @@ export default function BookSpa() {
         checkBookGenre();
     }, [isAddMode]);
 
+    //도서 삭제 함수
+    const deleteBook = useCallback(async (target)=>{
+        const result = await Swal.fire({
+            title:"해당 도서를 삭제하시겠습니까?",
+            text:"삭제한 도서는 다시 복구할 수 없습니다",
+            icon:"warning",
+            confirmButtonText:"네, 삭제하겠습니다",
+            cancelButtonText:"아니오, 나중에 삭제하겠습니다",
+            showCancelButton:true,
+        });
+        if(result.isConfirmed === false) return;
+
+        //실제 삭제 요청
+        const response = await axios.delete(`/api/book/${target.bookId}`);
+        //목록에서 찾아서 삭제하여 지워진 척
+        setBookList(prev=>prev.filter(
+            book => book.bookId !== target.bookId
+        ))
+        //알림
+        toast.success("도서 삭제가 완료되었습니다");
+    }, []);
+
     return (<>
         <Jumbotron title="도서 CRUD 통합 구현" content="한 페이지에서 CRUD를 모두 처리해봅니다" />
 
@@ -313,9 +336,13 @@ export default function BookSpa() {
                                     <span>{book.bookPublicationDate} 출간</span>
                                 )}                                
                             </p>
+
+                            {/* 수정삭제 패널 */}
                             <div className="text-end">
-                                <FaSquarePen className="text-danger" size={36}
+                                <FaSquarePen className="text-warning" size={36}
                                         onClick={e=>openModalToEdit(book)}/>
+                                <FaTrash className="text-danger ms-4" size={36}
+                                        onClick={e=>deleteBook(book)}/>
                             </div>
                         </div>
                     </ListGroup.Item>
