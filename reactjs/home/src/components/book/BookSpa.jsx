@@ -92,7 +92,7 @@ export default function BookSpa() {
         setResult(prev=>({
             ...prev,
             bookPublisher: "is-valid"
-        }))        
+        }));
     }, [book, result]);
     const checkBookAuthor = useCallback(()=>{
         const regex = /^[^!@#$]+$/;
@@ -218,6 +218,17 @@ export default function BookSpa() {
         const response = await axios.put(`/api/book/${book.bookId}`, book);
         toast.success(`${book.bookId}번 도서 정보 변경완료`);
         closeModal();
+        
+        //서버의 응답 결과(response.data)를 bookList에서 찾아서 덮어쓰기한다 (목록이 갱신된 척한다)
+        //setBookList(bookList.map(...));
+        setBookList(prev=>prev.map(
+            book=>{
+                if(book.bookId === response.data.bookId) {//내가찾던책이면
+                    return {...response.data};//서버가 보내준 결과로 바꿔주고
+                }
+                return {...book};//나머지는 그대로 재사용
+            }
+        ));
     }, [book]);
 
     //만약 개별항목별로 수정이 가능하게 하려면 목록과 똑같은 상태배열이 있거나, 목록에 상태가 포함되어야 한다
@@ -434,20 +445,20 @@ export default function BookSpa() {
             </Modal.Body>
             <Modal.Footer>
                 <Button variant="secondary" onClick={closeModal}>
-                    <FaXmark/>
+                    <FaXmark className="me-2"/>
                     <span>취소하기</span>
                 </Button>
 
                 {isAddMode ? (
                 <Button variant="success" disabled={allValid === false}
                         onClick={save}>
-                    <FaPlus/>
+                    <FaPlus className="me-2"/>
                     <span>등록하기</span>
                 </Button>
                 ) : (
                 <Button variant="warning" disabled={allValid === false}
                         onClick={edit}>
-                    <FaPen/>
+                    <FaPen className="me-2"/>
                     <span>수정하기</span>
                 </Button>
                 )}
