@@ -9,6 +9,7 @@ import CountryDetail from "@components/country/CountryDetail";
 import LectureAdd from "@components/lecture/LectureAdd";
 import LectureDetail from "@components/lecture/LectureDetail";
 import CountryEdit from "@components/country/CountryEdit";
+import BookSpa from "@components/book/BookSpa";
 
 
 export default function Body() {
@@ -28,6 +29,7 @@ export default function Body() {
         <Route path="/lecture/detail/:lectureNo" element={<LectureDetail/>}/>
         
         <Route path="/book/list" element={<BookList/>}/>
+        <Route path="/book/spa" element={<BookSpa/>}/>
 
         {/* fallback route */}
         <Route path="*" element={<NotFound/>}/>
