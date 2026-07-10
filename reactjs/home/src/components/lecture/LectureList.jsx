@@ -50,13 +50,11 @@ export default function LectureList() {
 
         const dataSize = lectureList.length;
         const lastLectureNo = dataSize === 0 ? 
-                            0 : lectureList[dataSize-1].lectureNo;
+                            null : lectureList[dataSize-1].lectureNo;
 
-        const response = await axios.get("/api/lecture/listForReact",{
-            params: {//GET방식일 때
-                lastLectureNo: lastLectureNo,
-                size : size
-            }
+        const response = await axios.post("/api/lecture/list-more",{
+            lastNo: lastLectureNo,
+            size : size
         });
         //덮어쓰기가 아니라 추가(이어쓰기)가 필요
         setLectureList([...lectureList, ...response.data.list]);
