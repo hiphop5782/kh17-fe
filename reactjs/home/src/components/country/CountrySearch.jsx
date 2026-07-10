@@ -9,36 +9,25 @@ export default function CountrySearch() {
     //state
     const [keyword, setKeyword] = useState("");
     const [searchList, setSearchList] = useState([]);
-    const [composition, setComposition] = useState(false);//입력 글자가 조합중인지 상태값
-
-    //입력중인 값을 제거한 검색용 키워드
-    const [result, setResult] = useState("");
 
     //callback
     const changeKeyword = useCallback(e=>{
-        //e.data가 존재하면 onCompositionUpdate 상황, 없으면 onChange 상황
-        if(e.data !== undefined) {//onCompositionUpdate 상황이면 e.data를 확인해서 keyword를 갱신
-            //console.log(e.target.value, e.data);
-            setResult(e.target.value.substring(0, e.target.value.length-1));
-        }
-        else {//onChange 상황 (기존처럼 keyword를 업데이트)
-            setKeyword(e.target.value);
-        }
+        setKeyword(e.target.value);
     }, []);
 
     useEffect(()=>{
         searchKeyword();
-    }, [result]);
+    }, [keyword]);
 
     const searchKeyword = useCallback(async ()=>{
-        if(result.length === 0) {
+        if(keyword.length === 0) {
             setSearchList([]);
             return;
         }
 
-        const response = await axios.get(`/api/country/countryName/${result}`);
+        const response = await axios.get(`/api/country/countryName/${keyword}`);
         setSearchList(response.data);
-    }, [result]);
+    }, [keyword]);
 
     return (<>
         <Jumbotron title="국가명 검색 샘플"/>
@@ -49,13 +38,7 @@ export default function CountrySearch() {
                 <div className="position-relative">
                     <Form.Control placeholder="검색어 입력" size="lg"
                         value={keyword} 
-                        onChange={changeKeyword}
-                        onCompositionStart={e=>setComposition(true)}
-                        onCompositionUpdate={changeKeyword}
-                        onCompositionEnd={e=>{
-                            setResult(e.target.value);
-                            setComposition(false);
-                        }}/>
+                        onChange={changeKeyword}/>
                     <ListGroup className="position-absolute start-0 end-0 top-100">
                         {searchList.map(country=>(
                         <ListGroup.Item key={country.countryNo}>
