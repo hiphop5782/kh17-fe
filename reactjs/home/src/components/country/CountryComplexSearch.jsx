@@ -175,6 +175,18 @@ export default function CountryComplexSearch() {
         if(eng === "country_population desc") return "인구 많은순";
     }, []);
 
+    const checkAll = useCallback(e=>{
+        const isAll = condition.countryRegions.length === 6;
+        if(isAll) {//전체 선택중인 상태
+            setCondition({...condition, countryRegions:[]});//비워!
+        }
+        else {//전체 선택중이 아닌 상태
+            setCondition({...condition, countryRegions:[
+                "아시아","아프리카","북아메리카","남아메리카","유럽","오세아니아"
+            ]});//채워!
+        }
+    }, [condition]);
+
     //view
     return (<>
         <Jumbotron title="국가 복합 검색 예제" content="조건이 있을지 없을지 모르는 형태를 처리해봅시다"/>
@@ -183,6 +195,10 @@ export default function CountryComplexSearch() {
         <Row className="mt-4">
             <Form.Label column sm={3}>대륙</Form.Label>
             <Col sm={9}>
+                <Form.Check type="checkbox" label="전체 선택" 
+                        onChange={checkAll}
+                        checked={condition.countryRegions.length === 6}/>
+                <hr/>
                 <Form.Check type="checkbox" value={"아시아"} label="아시아" onChange={checkCountryRegion} checked={condition.countryRegions.includes("아시아")}/>
                 <Form.Check type="checkbox" value={"아프리카"} label="아프리카" onChange={checkCountryRegion} checked={condition.countryRegions.includes("아프리카")}/>
                 <Form.Check type="checkbox" value={"북아메리카"} label="북아메리카" onChange={checkCountryRegion} checked={condition.countryRegions.includes("북아메리카")}/>
