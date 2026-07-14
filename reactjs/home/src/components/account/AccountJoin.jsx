@@ -1,8 +1,8 @@
 import Jumbotron from "@templates/Jumbotron";
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { useState } from "react";
-import { Col, Form, Row } from "react-bootstrap";
-import { FaAsterisk } from "react-icons/fa6";
+import { Button, Col, Form, Row } from "react-bootstrap";
+import { FaAsterisk, FaMagnifyingGlass, FaUserPlus, FaXmark } from "react-icons/fa6";
 
 export default function AccountJoin() {
     //state
@@ -101,6 +101,54 @@ export default function AccountJoin() {
         }));
     }, [account]);
 
+    const checkAccountContact = useCallback(e=>{
+        const regex = /^010[1-9][0-9]{7}$/;
+        const valid = account.accountContact.length === 0 || regex.test(account.accountContact);
+        const clazz = valid ? "is-valid" : "is-invalid";
+        setResult(prev=>({
+            ...prev,
+            accountContact: clazz
+        }));
+    }, [account]);
+
+    const checkAccountAddress = useCallback(e=>{
+        const empty = account.accountPost === "" && account.accountAddress1 === "" && account.accountAddress2 === "";
+        const fill = account.accountPost !== "" && account.accountAddress1 !== "" && account.accountAddress2 !== "";
+        const valid = empty || fill;
+        const clazz = valid ? "is-valid" : "is-invalid";
+        setResult(prev=>({
+            ...prev,
+            accountPost: clazz,
+            accountAddress1: clazz,
+            accountAddress2: clazz
+        }));
+    }, [account]);
+
+    const checkAccountMessage = useCallback(e=>{
+        setResult(prev=>({
+            ...prev,
+            accountMessage: "is-valid"
+        }));
+    }, [account]);
+
+    //memo
+    const allValid = useMemo(()=>{
+        if(result.accountId !== "is-valid") return false;//필수
+        if(result.accountPassword !== "is-valid") return false;//필수
+        if(result.accountPassword2 !== "is-valid") return false;//필수
+        if(result.accountNickname !== "is-valid") return false;//필수
+        if(result.accountEmail !== "is-valid") return false;//필수
+        
+        if(result.accountBirth === "is-invalid") return false;//선택
+        if(result.accountContact === "is-invalid") return false;//선택
+        if(result.accountPost === "is-invalid") return false;//선택
+        if(result.accountAddress1 === "is-invalid") return false;//선택
+        if(result.accountAddress2 === "is-invalid") return false;//선택
+        if(result.accountMessage === "is-invalid") return false;//선택
+
+        return true;
+    }, [result]);
+
     //view
     return (<>
         <Jumbotron title="가입 정보 입력" content="부정확한 정보 입력이 확인된 경우 계정 이용이 제한될 수 있습니다"/>
@@ -197,6 +245,87 @@ export default function AccountJoin() {
                     className={result.accountBirth}/>
                 {/* <div className="valid-feedback"></div> */}
                 <div className="invalid-feedback">날짜 형식이 올바르지 않습니다</div>
+            </Col>
+        </Row>
+
+        <Row className="mt-4">
+            <Form.Label column sm={3}>
+                <span>연락처</span>
+            </Form.Label>
+            <Col sm={9}>
+                <Form.Control type="text" inputMode="tel" name="accountContact"
+                    value={account.accountContact} onChange={changeStringValue}
+                    onBlur={checkAccountContact}
+                    className={result.accountContact}/>
+                {/* <div className="valid-feedback"></div> */}
+                <div className="invalid-feedback">연락처 형식이 올바르지 않습니다</div>
+            </Col>
+        </Row>
+
+        <Row className="mt-4">
+            <Form.Label column sm={3}>
+                <span>주소</span>
+            </Form.Label>
+            <Col sm={9}>
+                <div className="d-flex">
+                    <Form.Control type="text" inputMode="numeric" 
+                        name="accountPost" value={account.accountPost} 
+                        onChange={changeStringValue}
+                        className={`${result.accountPost} w-auto d-inline-block`}
+                        placeholder="우편번호"/>
+                    <Button variant="success" className="ms-2">
+                        <FaMagnifyingGlass/>
+                        <span className="d-none d-md-inline-block">우편번호 검색</span>
+                    </Button>
+                    <Button variant="danger" className="ms-2">
+                        <FaXmark/>
+                        <span className="d-none d-md-inline-block">작성내역 지우기</span>
+                    </Button>
+                </div>
+            </Col>
+        </Row>
+        <Row className="mt-2">
+            {/* <Col sm={9} className="offset-sm-3" > */}
+            <Col sm={ {span:9 , offset:3} }>
+                <Form.Control type="text"
+                    name="accountAddress1" value={account.accountAddress1} 
+                    onChange={changeStringValue}
+                    className={result.accountAddress1}
+                    placeholder="기본주소"/>
+            </Col>
+        </Row>
+        <Row className="mt-2">
+            <Col sm={ {span:9 , offset:3} }>
+                <Form.Control type="text"
+                    name="accountAddress2" value={account.accountAddress2} 
+                    onChange={changeStringValue}
+                    onBlur={checkAccountAddress}
+                    className={result.accountAddress2}
+                    placeholder="상세주소"/>
+                <div className="invalid-feedback">주소는 비우거나 모두 작성해야 합니다</div>
+            </Col>
+        </Row>
+
+
+        <Row className="mt-4">
+            <Form.Label column sm={3}>
+                <span>상태메세지</span>
+            </Form.Label>
+            <Col sm={9}>
+                <Form.Control as="textarea" rows={5} name="accountMessage"
+                    value={account.accountMessage} onChange={changeStringValue}
+                    onBlur={checkAccountMessage}
+                    className={result.accountMessage}/>
+            </Col>
+        </Row>
+
+        <Row className="my-5">
+            <Col>
+                <Button variant="success" size="lg" className="w-100" 
+                                            disabled={allValid === false}>
+                    <FaUserPlus/>
+                    <span className="ms-2">회원 가입하기</span>
+                </Button>
             </Col>
         </Row>
     </>)
