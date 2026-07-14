@@ -4,8 +4,14 @@ import { useState } from "react";
 import { Button, Col, Form, Row } from "react-bootstrap";
 import { FaAsterisk, FaEye, FaEyeSlash, FaMagnifyingGlass, FaUserPlus, FaXmark } from "react-icons/fa6";
 import axios from "axios";
+import { useKakaoPostcodePopup } from "react-daum-postcode";
 
 export default function AccountJoin() {
+    //kakao post
+    const open = useKakaoPostcodePopup(
+        "//t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"
+    );
+
     //state
     const [account, setAccount] = useState({
         accountId: "",
@@ -179,6 +185,11 @@ export default function AccountJoin() {
         return true;
     }, [result]);
 
+    //우편번호 처리
+    const addressSearch = useCallback(()=>{
+        open();
+    }, []);
+
     //view
     return (<>
         <Jumbotron title="가입 정보 입력" content="부정확한 정보 입력이 확인된 경우 계정 이용이 제한될 수 있습니다"/>
@@ -336,15 +347,18 @@ export default function AccountJoin() {
             </Form.Label>
             <Col sm={9}>
                 <div className="d-flex">
+                    {/* 우편번호 입력창 */}
                     <Form.Control type="text" inputMode="numeric" 
                         name="accountPost" value={account.accountPost} 
-                        onChange={changeStringValue}
+                        readOnly onClick={addressSearch}
                         className={`${result.accountPost} w-auto d-inline-block`}
                         placeholder="우편번호"/>
-                    <Button variant="success" className="ms-2">
+                    {/* 검색 버튼 */}
+                    <Button variant="success" className="ms-2" onClick={addressSearch}>
                         <FaMagnifyingGlass/>
                         <span className="d-none d-md-inline-block">우편번호 검색</span>
                     </Button>
+                    {/* 지우기 버튼 */}
                     <Button variant="danger" className="ms-2">
                         <FaXmark/>
                         <span className="d-none d-md-inline-block">작성내역 지우기</span>
@@ -357,7 +371,7 @@ export default function AccountJoin() {
             <Col sm={ {span:9 , offset:3} }>
                 <Form.Control type="text"
                     name="accountAddress1" value={account.accountAddress1} 
-                    onChange={changeStringValue}
+                    readOnly onClick={addressSearch}
                     className={result.accountAddress1}
                     placeholder="기본주소"/>
             </Col>
