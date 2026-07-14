@@ -1,5 +1,5 @@
 import Jumbotron from "@templates/Jumbotron";
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useRef } from "react";
 import { useState } from "react";
 import { Button, Col, Form, Row } from "react-bootstrap";
 import { FaAsterisk, FaEye, FaEyeSlash, FaMagnifyingGlass, FaUserPlus, FaXmark } from "react-icons/fa6";
@@ -185,9 +185,43 @@ export default function AccountJoin() {
         return true;
     }, [result]);
 
+    //ref 
+    // - 태그 참조용 동기방식의 데이터
+    // - 태그를 제어하는 리모컨으로 사용
+    // - 언제 어디서나 일정한 값을 가져야하는 데이터에 사용 (로딩중과 같은 상태 데이터)
+    // - 문법 : const 변수 = useRef(초기값);
+    const address2ref = useRef();    
+
     //우편번호 처리
     const addressSearch = useCallback(()=>{
-        open();
+        open({
+            onComplete : (data)=>{
+                //console.log(data);
+                //- userSelectedType : 선택한 주소의 유형 (R or J)
+                //- roadAddress : 도로명 주소(신주소)
+                //- jibunAddress : 지번 주소(구주소)
+                //- zonecode : 우편번호
+                const zonecode = data.zonecode;
+                const address = data.userSelectedType === "R" ? 
+                                        data.roadAddress : data.jibunAddress;
+                
+                //주소 변경
+                setAccount(prev=>({
+                    ...prev,
+                    accountPost : zonecode,
+                    accountAddress1 : address,
+                    accountAddress2 : "",
+                }));
+
+                //상세주소창에 포커스를 줄 수 있나?
+                
+                //기존코드 - 태그 선택 후 명령을 사용
+                //document.querySelector("[name=accountAddress2]").focus();
+
+                //리액트는? ref의 current필드를 사용
+                address2ref.current.focus();
+            }
+        });
     }, []);
 
     //view
@@ -383,7 +417,9 @@ export default function AccountJoin() {
                     onChange={changeStringValue}
                     onBlur={checkAccountAddress}
                     className={result.accountAddress2}
-                    placeholder="상세주소"/>
+                    placeholder="상세주소"
+                    ref={address2ref}
+                    />
                 <div className="invalid-feedback">주소는 비우거나 모두 작성해야 합니다</div>
             </Col>
         </Row>
