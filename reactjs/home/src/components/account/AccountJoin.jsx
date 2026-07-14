@@ -3,6 +3,7 @@ import { useCallback, useMemo } from "react";
 import { useState } from "react";
 import { Button, Col, Form, Row } from "react-bootstrap";
 import { FaAsterisk, FaMagnifyingGlass, FaUserPlus, FaXmark } from "react-icons/fa6";
+import axios from "axios";
 
 export default function AccountJoin() {
     //state
@@ -21,7 +22,8 @@ export default function AccountJoin() {
     });
 
     const [result, setResult] = useState({
-        accountId: null,
+        //accountId: null,
+        accountId : { clazz : null , code : null },
         accountPassword: null,
         accountPassword2: null,
         accountEmail: null,
@@ -45,11 +47,24 @@ export default function AccountJoin() {
     }, []);
 
     //- 검사
-    const checkAccountId = useCallback(e=>{
+    const checkAccountId = useCallback(async e=>{
         const regex = /^[a-z][a-z0-9]{4,19}$/;
         const valid = regex.test(account.accountId);
-        const clazz = valid ? "is-valid" : "is-invalid";
-        setResult(prev=>({...prev, accountId : clazz}));
+        if(valid === false) {//아이디 형식오류
+            setResult(prev=>({
+                ...prev, 
+                accountId : { clazz : "is-invalid" , code : "format" }
+            }));
+            return;
+        }
+        //형식 통과 → 중복 검사
+        const response = await axios.get(`/api/account/check-id/${account.accountId}`);
+        const clazz = response.data === true ? "is-valid" : "is-invalid";
+        const code = response.data === true ? null : "duplicate";
+        setResult(prev=>({
+            ...prev, 
+            accountId : { clazz : clazz , code : code }
+        }));
     }, [account]);
 
     const checkAccountPassword = useCallback(e=>{
@@ -133,7 +148,7 @@ export default function AccountJoin() {
 
     //memo
     const allValid = useMemo(()=>{
-        if(result.accountId !== "is-valid") return false;//필수
+        if(result.accountId.clazz !== "is-valid") return false;//필수
         if(result.accountPassword !== "is-valid") return false;//필수
         if(result.accountPassword2 !== "is-valid") return false;//필수
         if(result.accountNickname !== "is-valid") return false;//필수
@@ -163,9 +178,16 @@ export default function AccountJoin() {
                     value={account.accountId} onChange={changeStringValue}
                     placeholder="알파벳 소문자 시작, 숫자 포함 5-20자 이내"
                     onBlur={checkAccountId}
-                    className={result.accountId}/>
+                    className={result.accountId.clazz}/>
                 <div className="valid-feedback">아이디 설정이 완료되었습니다</div>
-                <div className="invalid-feedback">형식오류 or 사용중</div>
+                <div className="invalid-feedback">
+                    {result.accountId.code === "format" && (<>
+                        영문소문자로 시작하며 숫자 포함 5~20글자로 작성해야 합니다.
+                    </>) }
+                    {result.accountId.code === "duplicate" && (<>
+                        이미 사용중입니다. 다른 아이디를 작성하세요.
+                    </>) }
+                </div>
             </Col>
         </Row>
 
