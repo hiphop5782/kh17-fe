@@ -1,8 +1,9 @@
 import { Button } from "react-bootstrap";
 
-export default function TestRight({count, setCount}) {
+export default function TestRight({plusTen}) {
 
     return (<>
-        <Button variant="primary" className="me-2" onClick={e=>setCount(-500)}>+10</Button>
+        <Button variant="primary" className="me-2" 
+            onClick={plusTen}>+10</Button>
     </>)
 }
