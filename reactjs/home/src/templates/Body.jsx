@@ -17,6 +17,8 @@ import BookList from "@components/book/BookList";
 import BookSpa from "@components/book/BookSpa";
 
 import AccountJoin from "@components/account/AccountJoin";
+import AccountJoinSuccess from "@components/account/AccountJoinSuccess";
+import AccountJoinFail from "@components/account/AccountJoinFail";
 
 export default function Body() {
 
@@ -41,6 +43,8 @@ export default function Body() {
 
         {/* 회원 관련 */}
         <Route path="/account/join" element={<AccountJoin/>}/>
+        <Route path="/account/joinSuccess" element={<AccountJoinSuccess/>}/>
+        <Route path="/account/joinFail" element={<AccountJoinFail/>}/>
 
         {/* fallback route */}
         <Route path="*" element={<NotFound/>}/>
