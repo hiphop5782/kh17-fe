@@ -19,6 +19,7 @@ export default defineConfig({
       "@components": path("./src/components"),
       "@error": path("./src/error"),
       "@templates": path("./src/templates"),
+      "@utils": path("./src/utils"),
     }
   }
 })
