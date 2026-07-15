@@ -6,6 +6,7 @@ import { FaAsterisk, FaCheck, FaEye, FaEyeSlash, FaMagnifyingGlass, FaPaperPlane
 import axios from "axios";
 import { useKakaoPostcodePopup } from "react-daum-postcode";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 export default function AccountJoin() {
     //kakao post
@@ -336,6 +337,23 @@ export default function AccountJoin() {
         return true;
     }, [result, certNumberResult]);
 
+    // 최종 가입
+    const navigate = useNavigate();
+    const sendJoin = useCallback(async ()=>{
+        try {
+            //const copy = {...account};
+            //delete copy.accountPassword2;
+            const { accountPassword2, ...copy } = account;
+            const response = await axios.post("/api/account/", copy);
+            toast.success("회원 가입이 완료되었습니다");
+            //navigate(성공페이지);
+        }
+        catch(e) {
+            toast.error("회원 가입 과정에서 오류가 발생했습니다");
+            //navigate(실패페이지);
+        }
+    }, [account]);
+
     //view
     return (<>
         <Jumbotron title="가입 정보 입력" content="부정확한 정보 입력이 확인된 경우 계정 이용이 제한될 수 있습니다"/>
@@ -619,7 +637,7 @@ export default function AccountJoin() {
         <Row className="my-5">
             <Col>
                 <Button variant="success" size="lg" className="w-100" 
-                                            disabled={allValid === false}>
+                        disabled={allValid === false} onClick={sendJoin}>
                     <FaUserPlus/>
                     <span className="ms-2">회원 가입하기</span>
                 </Button>
