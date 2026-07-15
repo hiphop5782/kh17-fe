@@ -8,13 +8,12 @@
 import { atom } from "jotai";
 
 // - TestMain, TestLeft, TestRight에서 공유할 count라는 이름의 통합상태(atom)을 생성
-
 //const [count, setCount] = useState(0);
 export const countState = atom(0);
 
-
-
-
+// - 로그인 결과를 저장할 통합상태 생성
+export const loginState = atom(null);
 
 //마지막에 개발자 도구에 표시될 라벨을 설정 (위치 무관)
 countState.debugLabel = "연습용 카운트";
+loginState.debugLabel = "loginState";
