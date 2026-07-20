@@ -36,6 +36,13 @@ export const isLoginState = atom(get=>{
     const loginUser = get(loginUserState);
     return loginUser !== null;
 });
+// [2] 관리자인지 판정하여 반환하는 파생 atom
+export const isAdminState = atom(get=>{
+    const loginUser = get(loginUserState);
+    // if(loginUser === null) return false;
+    // return loginUser.accountLevel === "마스터";
+    return loginUser?.accountLevel === "마스터";
+});
 
 //마지막에 개발자 도구에 표시될 라벨을 설정 (위치 무관)
 countState.debugLabel = "연습용 카운트";

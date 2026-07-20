@@ -7,7 +7,7 @@ import { Link } from "react-router-dom";
 import { loginUserState } from "@utils/storage";
 import { useCallback, useMemo } from "react";
 import { RESET } from "jotai/utils";
-import { isLoginState } from "@utils/storage";
+import { isLoginState, isAdminState } from "@utils/storage";
 
 export default function Menu() {
     //메뉴에서는 로그인 상태 데이터가 필요하다
@@ -59,7 +59,14 @@ export default function Menu() {
                     </Nav>
                     <Nav>
                         { isLogin === true && (<>
+                        
+                        { isAdmin === true && (<>
+                        <Nav.Link as={Link} to="">관리메뉴</Nav.Link>
+                        </>)}
+                        { isAdmin === false && (<>
                         <Nav.Link as={Link} to="">내정보</Nav.Link>
+                        </>)}
+
                         <Nav.Link onClick={logout}>로그아웃</Nav.Link>
                         </>) }
                         { isLogin !== true && (<>
