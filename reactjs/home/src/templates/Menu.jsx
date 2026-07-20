@@ -60,7 +60,7 @@ export default function Menu() {
                         <Nav.Link as={Link} to="">관리메뉴</Nav.Link>
                         </>)}
                         { isAdmin === false && (<>
-                        <Nav.Link as={Link} to="">내정보</Nav.Link>
+                        <Nav.Link as={Link} to="/account/mypage">내정보</Nav.Link>
                         </>)}
 
                         <Nav.Link onClick={logoutAction}>로그아웃</Nav.Link>

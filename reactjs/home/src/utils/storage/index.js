@@ -44,14 +44,14 @@ export const isAdminState = atom(get=>{
     return loginUser?.accountLevel === "마스터";
 });
 
-//atom을 변경하기 위한 파생 atom
+//atom을 변경하기 위한 파생 atom - atom(null, (get,set,파라미터...)=>{});
 // [1] 로그인 처리를 수행하는 atom
-export const loginActionState = atom(null, (set,get,data)=>{
+export const loginActionState = atom(null, (get,set,data)=>{
     //set(변수명, 값);
     set(loginUserState, data);
 });
 // [2] 로그아웃 처리를 수행하는 atom
-export const logoutActionState = atom(null, (set,get)=>{
+export const logoutActionState = atom(null, (get,set)=>{
     //set(변수명, 값);
     set(loginUserState, RESET);
 });
@@ -59,4 +59,6 @@ export const logoutActionState = atom(null, (set,get)=>{
 
 //마지막에 개발자 도구에 표시될 라벨을 설정 (위치 무관)
 countState.debugLabel = "연습용 카운트";
-loginUserState.debugLabel = "loginUserState";
+loginUserState.debugLabel = "로그인 유저의 정보";
+isLoginState.debugLabel = "로그인 상태";
+isAdminState.debugLabel = "관리자 여부";
