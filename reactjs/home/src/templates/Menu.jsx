@@ -1,4 +1,4 @@
-import { useAtom } from "jotai";
+import { useAtom, useAtomValue } from "jotai";
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
@@ -6,17 +6,24 @@ import NavDropdown from 'react-bootstrap/NavDropdown';
 import { Link } from "react-router-dom";
 import { loginUserState } from "@utils/storage";
 import { useCallback, useMemo } from "react";
+import { RESET } from "jotai/utils";
+import { isLoginState } from "@utils/storage";
 
 export default function Menu() {
     //메뉴에서는 로그인 상태 데이터가 필요하다
     const [loginUser, setLoginUser] = useAtom(loginUserState);
-    const isLogin = useMemo(()=>{
-        return loginUser !== null;
-    }, [loginUser]);
+    
+    //읽기전용 atom을 불러오는법
+    //const [isLogin] = useAtom(isLoginState);
+    const isLogin = useAtomValue(isLoginState);
+
+    const isAdmin = useAtomValue(isAdminState);
 
     const logout = useCallback(()=>{
-        setLoginUser(null);
+        setLoginUser(RESET);//jotai 상태 초기화 + 저장소 제거
     }, []);
+
+    console.log("loginUser", loginUser);
 
     return (<>
         <Navbar expand="md" className="bg-body-tertiary sticky-top"
