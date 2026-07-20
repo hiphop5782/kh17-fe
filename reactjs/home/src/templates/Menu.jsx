@@ -11,8 +11,8 @@ export default function Menu() {
     //메뉴에서는 로그인 상태 데이터가 필요하다
     const [loginUser, setLoginUser] = useAtom(loginUserState);
     const isLogin = useMemo(()=>{
-        return login !== null;
-    }, [login]);
+        return loginUser !== null;
+    }, [loginUser]);
 
     const logout = useCallback(()=>{
         setLoginUser(null);
