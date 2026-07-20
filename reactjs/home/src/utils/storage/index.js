@@ -6,7 +6,7 @@
 // - 생성방법 : atom 함수 사용
 
 import { atom } from "jotai";
-import { atomWithStorage, createJSONStorage } from "jotai/utils";
+import { atomWithStorage, createJSONStorage, RESET } from "jotai/utils";
 
 // - TestMain, TestLeft, TestRight에서 공유할 count라는 이름의 통합상태(atom)을 생성
 //const [count, setCount] = useState(0);
@@ -43,6 +43,19 @@ export const isAdminState = atom(get=>{
     // return loginUser.accountLevel === "마스터";
     return loginUser?.accountLevel === "마스터";
 });
+
+//atom을 변경하기 위한 파생 atom
+// [1] 로그인 처리를 수행하는 atom
+export const loginActionState = atom(null, (set,get,data)=>{
+    //set(변수명, 값);
+    set(loginUserState, data);
+});
+// [2] 로그아웃 처리를 수행하는 atom
+export const logoutActionState = atom(null, (set,get)=>{
+    //set(변수명, 값);
+    set(loginUserState, RESET);
+});
+
 
 //마지막에 개발자 도구에 표시될 라벨을 설정 (위치 무관)
 countState.debugLabel = "연습용 카운트";
