@@ -12,8 +12,8 @@ import { atom } from "jotai";
 export const countState = atom(0);
 
 // - 로그인 결과를 저장할 통합상태 생성
-export const loginState = atom(null);
+export const loginUserState = atom(null);
 
 //마지막에 개발자 도구에 표시될 라벨을 설정 (위치 무관)
 countState.debugLabel = "연습용 카운트";
-loginState.debugLabel = "loginState";
+loginUserState.debugLabel = "loginUserState";
