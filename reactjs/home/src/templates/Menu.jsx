@@ -21,6 +21,17 @@ export default function Menu() {
 
     const logoutAction = useSetAtom(logoutActionState);
 
+    //서버에 로그아웃 요청 및 Jotai 저장소 초기화 요청을 수행하는 함수
+    const logout = useCallback(async ()=>{
+        try {
+            await axios.delete("/service/auth/logout");//쿠키 삭제 요청
+        }
+        catch(e){}
+        finally {
+            logoutAction();//에러여부와 관계없이 화면상의 데이터는 삭제
+        }
+    }, []);
+
     return (<>
         <Navbar expand="md" className="bg-body-tertiary sticky-top"
                     bg="dark" data-bs-theme="dark">
@@ -63,7 +74,7 @@ export default function Menu() {
                         <Nav.Link as={Link} to="/account/mypage">내정보</Nav.Link>
                         </>)}
 
-                        <Nav.Link onClick={logoutAction}>로그아웃</Nav.Link>
+                        <Nav.Link onClick={logout}>로그아웃</Nav.Link>
                         </>) }
                         { isLogin !== true && (<>
                         <Nav.Link as={Link} to="/account/join">회원가입</Nav.Link>
