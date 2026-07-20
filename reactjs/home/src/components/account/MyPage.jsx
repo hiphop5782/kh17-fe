@@ -2,7 +2,7 @@ import Jumbotron from "@templates/Jumbotron";
 import { useAtom, useAtomValue } from "jotai";
 import { Col, Row } from "react-bootstrap";
 import { loginUserState } from "@utils/storage";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import axios from "axios";
 
 export default function MyPage() {
@@ -22,8 +22,17 @@ export default function MyPage() {
         setAccount(data);
     }, [accountId]);
 
+    //주소를 완성해서 반환하는 메모
+    const unionAddress = useMemo(()=>{
+        if(account === null) return "";
+        if(account.accountPost === null) return "";
+        if(account.accountAddress1 === null) return "";
+        if(account.accountAddress2 === null) return "";
+        return `[${account.accountPost}] ${account.accountAddress1} ${account.accountAddress2}`;
+    }, [account]);
+
     return (<>
-        <Jumbotron title="???님의 개인 정보"/>
+        <Jumbotron title={`${account?.accountNickname}님의 개인 정보`}/>
 
         <Row className="mt-4">
             <Col sm={3} className="fw-bold text-info">아이디</Col>
@@ -52,11 +61,7 @@ export default function MyPage() {
 
         <Row className="mt-4">
             <Col sm={3} className="fw-bold text-info">주소</Col>
-            <Col sm={9} className="text-secondary">
-                [{account?.accountPost}]
-                {account?.accountAddress1}
-                {account?.accountAddress2}
-            </Col>
+            <Col sm={9} className="text-secondary">{unionAddress}</Col>
         </Row>
 
         <Row className="mt-4">
