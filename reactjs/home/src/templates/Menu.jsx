@@ -9,6 +9,7 @@ import { useCallback, useMemo } from "react";
 import { RESET } from "jotai/utils";
 import { isLoginState, isAdminState } from "@utils/storage";
 import { logoutActionState } from "@utils/storage";
+import axios from "axios";
 
 export default function Menu() {
     //메뉴에서는 로그인 상태 데이터가 필요하다
@@ -26,7 +27,9 @@ export default function Menu() {
         try {
             await axios.delete("/service/auth/logout");//쿠키 삭제 요청
         }
-        catch(e){}
+        catch(e){
+            console.error(e);
+        }
         finally {
             logoutAction();//에러여부와 관계없이 화면상의 데이터는 삭제
         }
