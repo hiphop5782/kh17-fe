@@ -7,6 +7,7 @@ import axios from "axios";
 import { Button, Col, Row } from "react-bootstrap";
 import Swal from "sweetalert2";
 import { toast } from "react-toastify";
+import { apiClient } from "@utils/reaxios";
 
 
 export default function LectureDetail() {
@@ -43,7 +44,7 @@ export default function LectureDetail() {
         //     url:`http://localhost:8080/api/lecture/detail/${lectureNo}`,
         //     method:"get"
         // });
-        const response = await axios.get(`/api/lecture/detail/${lectureNo}`);
+        const response = await apiClient.get(`/lecture/detail/${lectureNo}`);
         setLecture(response.data);
     }, []);
 
@@ -62,7 +63,7 @@ export default function LectureDetail() {
         });
         if(result.isConfirmed === false) return;
 
-        const response = await axios.get(`/api/lecture/delete/${lectureNo}`);
+        const response = await apiClient.get(`/lecture/delete/${lectureNo}`);
         toast.error("강좌 삭제가 완료되었습니다");
         navigate("/lecture/list");
     }, [lectureNo]);

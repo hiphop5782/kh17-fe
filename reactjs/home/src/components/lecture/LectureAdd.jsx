@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 import Swal from 'sweetalert2'
 import Jumbotron from "@templates/Jumbotron";
 import { useNavigate } from "react-router-dom";
+import { apiClient } from "@utils/reaxios";
 
 export default function LectureAdd() {
     const navigate = useNavigate();
@@ -101,7 +102,7 @@ export default function LectureAdd() {
     // }, [lecture]);
 
     const send = useCallback(async () => {
-        const response = await axios.post("/api/lecture/insert", lecture);
+        const response = await apiClient.post("/lecture/insert", lecture);
         const result = await Swal.fire({
             title: "강좌 생성 완료",
             icon: "success",

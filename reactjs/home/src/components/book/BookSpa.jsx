@@ -8,6 +8,7 @@ import { FaPlus, FaChevronDown, FaAsterisk, FaXmark, FaPen, FaCheck, FaSquarePen
 import axios from "axios";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
+import { apiClient } from "@utils/reaxios";
 
 export default function BookSpa() {
     //모달을 띄우기 위한 state
@@ -27,8 +28,8 @@ export default function BookSpa() {
     }, [bookList]);
     const loadList = useCallback(async ()=>{
         //const response = await axios.get(`/api/book/lastBookId/${lastBookId}/size/${size}`);
-        const response = await axios.post(
-            "/api/book/list-more", 
+        const response = await apiClient.post(
+            "/book/list-more", 
             { lastNo : lastBookId , size : size }
         );
         //setBookList(response.data.list);//덮어쓰기
@@ -199,7 +200,7 @@ export default function BookSpa() {
 
     //전송
     const save = useCallback(async ()=>{
-        const response = await axios.post("/api/book/", book);
+        const response = await apiClient.post("/book/", book);
         toast.success("신규 도서가 등록되었습니다");
         //setModal(false);//모달을 닫는건 맞지만...(권장하지 않음)
         closeModal();//모달을 닫는 함수를 부른다 (권장)
@@ -216,7 +217,7 @@ export default function BookSpa() {
         setBookList(prev=>([response.data, ...prev]));
     }, [book, /*bookList*/]);
     const edit = useCallback(async ()=>{
-        const response = await axios.put(`/api/book/${book.bookId}`, book);
+        const response = await apiClient.put(`/book/${book.bookId}`, book);
         toast.success(`${book.bookId}번 도서 정보 변경완료`);
         closeModal();
         
@@ -288,7 +289,7 @@ export default function BookSpa() {
         if(result.isConfirmed === false) return;
 
         //실제 삭제 요청
-        const response = await axios.delete(`/api/book/${target.bookId}`);
+        const response = await apiClient.delete(`/book/${target.bookId}`);
         //목록에서 찾아서 삭제하여 지워진 척
         setBookList(prev=>prev.filter(
             book => book.bookId !== target.bookId

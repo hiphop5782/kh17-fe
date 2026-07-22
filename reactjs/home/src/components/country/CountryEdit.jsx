@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import { Link, Navigate, useNavigate, useParams } from "react-router-dom";
 import { Row, Col, Form, Button } from "react-bootstrap";
 import Jumbotron from "@templates/Jumbotron";
+import { apiClient } from "@utils/reaxios";
 
 export default function CountryEdit() {
     const { countryNo } = useParams();
@@ -25,7 +26,7 @@ export default function CountryEdit() {
     }, []);
 
     const loadData = useCallback(async ()=>{
-        const response = await axios.get(`/api/country/${countryNo}`)
+        const response = await apiClient.get(`/country/${countryNo}`)
         setCountry(response.data);
     }, []);
 
@@ -112,8 +113,8 @@ export default function CountryEdit() {
 
     //데이터 전송 함수
     const send = useCallback(async ()=>{
-        const response = await axios.put(
-            `/api/country/${countryNo}`, 
+        const response = await apiClient.put(
+            `/country/${countryNo}`, 
             country
         );
         toast.success("국가 정보 변경이 완료되었습니다");

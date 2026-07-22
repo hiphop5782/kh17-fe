@@ -8,6 +8,7 @@ import { FaCheck, FaList, FaPenToSquare, FaSquarePen, FaTrash, FaXmark } from "r
 import { useCallback } from "react";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
+import { apiClient } from "@utils/reaxios";
 
 export default function CountryDetail() {
     // Route에 선언된 파라미터 변수를 읽으려면 useParams()를 사용해야 한다
@@ -31,7 +32,7 @@ export default function CountryDetail() {
     }, []);
 
     const loadData = useCallback(async ()=>{
-        const response = await axios.get(`/api/country/${countryNo}`)
+        const response = await apiClient.get(`/country/${countryNo}`)
         setCountry(response.data);
         setBackup(response.data);
     }, []);
@@ -52,7 +53,7 @@ export default function CountryDetail() {
 
         if(result.isConfirmed === false) return;
 
-        const response = await axios.delete(`http://localhost:8080/api/country/${countryNo}`);
+        const response = await apiClient.delete(`/country/${countryNo}`);
         toast.error("국가 삭제가 완료되었습니다");
         navigate("/country/list");
     }, [countryNo]);
@@ -87,8 +88,8 @@ export default function CountryDetail() {
 
     //국가명만 변경하는 함수
     const updateCountry = useCallback(async (field)=>{
-        const response = await axios.patch(
-            `/api/country/${countryNo}`, 
+        const response = await apiClient.patch(
+            `/country/${countryNo}`, 
             // {countryName : country.countryName}
             { [field] : country[field] }
         );

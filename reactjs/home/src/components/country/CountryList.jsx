@@ -1,10 +1,10 @@
 import Jumbotron from "@templates/Jumbotron";
 import { useCallback, useEffect, useState } from "react";
-import axios from "axios";
 import { FaChevronDown, FaPlus } from "react-icons/fa6";
 import { ClockLoader } from "react-spinners";
 import { Row, Col, Form, Table, Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
+import { apiClient } from "@utils/reaxios";
 
 export default function CountryList() {
     //state
@@ -30,8 +30,8 @@ export default function CountryList() {
         // const response = await axios.get(
         //     `http://localhost:8080/api/country/lastCountryNo/${lastCountryNo}/size/${size}`
         // );
-        const response = await axios.post(
-            "/api/country/list-more",
+        const response = await apiClient.post(
+            "/country/list-more",
             { lastNo : lastCountryNo , size : size }
         );
         setCountryList([...countryList, ...response.data.list]);//이어쓰기

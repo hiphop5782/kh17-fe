@@ -3,8 +3,8 @@ import { useEffect } from "react";
 import { useCallback } from "react";
 import { useState } from "react";
 import { Col, Form, ListGroup, Row } from "react-bootstrap";
-import axios from "axios";
 import { throttle, debounce } from "lodash-es";
+import { apiClient } from "../../utils/reaxios";
 
 export default function CountrySearch() {
     //state
@@ -32,7 +32,7 @@ export default function CountrySearch() {
         }
         console.log("searchKeyword 실행");
         
-        const response = await axios.get(`/api/country/countryName/${keyword}`);
+        const response = await apiClient.get(`/country/countryName/${keyword}`);
         setSearchList(response.data);
     }, 350), []);
 
