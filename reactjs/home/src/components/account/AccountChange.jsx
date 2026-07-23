@@ -7,6 +7,10 @@ import { useKakaoPostcodePopup } from "react-daum-postcode";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { apiClient, certClient } from "@utils/reaxios";
+import Swal from "sweetalert2";
+
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 export default function AccountChange() {
     //kakao post
@@ -493,10 +497,21 @@ export default function AccountChange() {
                 <span>생년월일</span>
             </Form.Label>
             <Col sm={9}>
-                <Form.Control type="date" name="accountBirth"
+                <DatePicker name="accountBirth" 
+                            selected={account.accountBirth}
+                            onChange={(date)=>{
+                                //date가 우리가 원하는 형식이 아님(내일 변경 후 설정)
+                                setAccount(prev=>({...prev, accountBirth: date}))
+                            }}
+                            onBlur={checkAccountBirth}
+                            dateFormat={"yyyy-MM-dd"}
+                            customInput={<Form.Control/>}
+                            wrapperClassName={`w-100`}
+                            className={result.accountBirth}/>
+                {/* <Form.Control type="date" name="accountBirth"
                     value={account.accountBirth} onChange={changeStringValue}
                     onBlur={checkAccountBirth}
-                    className={result.accountBirth}/>
+                    className={result.accountBirth}/> */}
                 {/* <div className="valid-feedback"></div> */}
                 <div className="invalid-feedback">날짜 형식이 올바르지 않습니다</div>
             </Col>
