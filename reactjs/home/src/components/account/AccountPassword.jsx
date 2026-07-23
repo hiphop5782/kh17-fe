@@ -67,7 +67,7 @@ export default function() {
             <Col sm={9}>
                 <Form.Control type="password" name="prevAccountPassword"
                         value={account.prevAccountPassword}
-                        onChange={changeStringValue}/>
+                        onChange={changeStringValue} autoFocus/>
             </Col>
         </Row>
 

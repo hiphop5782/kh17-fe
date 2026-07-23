@@ -64,7 +64,8 @@ export default function AccountLogin() {
             <Form.Label column sm={3}>아이디</Form.Label>
             <Col sm={9}>
                 <Form.Control type="text" name="accountId" value={account.accountId}
-                        onChange={changeStringValue} placeholder="User ID"/>
+                        onChange={changeStringValue} placeholder="User ID"
+                        autoFocus/>
             </Col>
         </Row>
         <Row className="mt-4">
