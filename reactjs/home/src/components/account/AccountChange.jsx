@@ -64,17 +64,28 @@ export default function AccountChange() {
     const loadData = useCallback(async ()=>{
         const { data } = await apiClient.get("/account/me");
         
+        //state의 필드명을 백업하고
+        const keyList = Object.keys(account);
+
         //data에 존재하는 null을 모두 ""로 변경한 뒤 설정
         //- 배열이 아니라 객체라서 배열 명령(map)만으로는 처리가 어려움
         const entry = Object.entries(data);//객체를 엔트리로 변환
-        const replace = entry.map(//엔트리를 순회하며 null을 ""로 치환
-            ( [key, value] ) => ( [key, value ?? ""] )
-        );
+        const replace = entry   .filter(
+                                    ( [key, value] ) => keyList.includes(key)
+                                )
+                                .map(//엔트리를 순회하며 null을 ""로 치환
+                                    ( [key, value] ) => ( [key, value ?? ""] )
+                                );
         const convert = Object.fromEntries(replace);//엔트리 배열을 객체로 되돌림
+        convert.accountPassword = "";//비밀번호 추가
+
+        // console.table(entry);
+        // console.table(replace);
+        // console.table(convert);
 
         setAccount(convert);
         setBackup(convert);
-    }, []);
+    }, [account]);
 
     //- 입력
     const changeStringValue = useCallback(e=>{
@@ -102,8 +113,7 @@ export default function AccountChange() {
     //- 검사
     const checkAccountPassword = useCallback(e=>{
         //비밀번호 검사
-        const regex = /^(?=.*?[A-Z]+)(?=.*?[a-z]+)(?=.*?[0-9]+)(?=.*?[\!\@\#\$\%\^\&\*\(\)\-\_\=\+\[\]\{\}\'\"\`\~\<\>\.\,\/\?\\\|]+)[A-Za-z0-9\!\@\#\$\%\^\&\*\(\)\-\_\=\+\[\]\{\}\'\"\`\~\<\>\.\,\/\?\\\|]{8,16}$/;
-        const valid = regex.test(account.accountPassword);
+        const valid = account.accountPassword !== "";
         const clazz = valid ? "is-valid" : "is-invalid";
         
         //결과 변경
@@ -341,7 +351,10 @@ export default function AccountChange() {
         if(result.accountNickname.clazz !== "is-valid") return false;//필수
         
         if(result.accountEmail.clazz !== "is-valid") return false;//필수
-        if(certNumberResult !== "is-valid") return false;//인증번호
+
+        if(account.accountEmail !== backup.accountEmail) {//이메일이 달라졌으면
+            if(certNumberResult !== "is-valid") return false;//인증번호 (이메일이 달라졌을 경우만)
+        }
 
         if(result.accountBirth === "is-invalid") return false;//선택
         if(result.accountContact === "is-invalid") return false;//선택
@@ -351,7 +364,7 @@ export default function AccountChange() {
         if(result.accountMessage === "is-invalid") return false;//선택
 
         return true;
-    }, [result, certNumberResult]);
+    }, [result, certNumberResult, backup, account]);
 
     // 최종 가입
     const navigate = useNavigate();
@@ -577,11 +590,11 @@ export default function AccountChange() {
                 <FaAsterisk className="text-danger"/>
 
                 { visible.accountPassword === true ? (
-                <FaEye className="text-danger ms-4" onClick={e=>{
+                <FaEye className="text-danger ms-2" onClick={e=>{
                     setVisible(prev=>({...prev, accountPassword:false }))
                 }}/>
                 ) : (
-                <FaEyeSlash className="text-secondary ms-4" onClick={e=>{
+                <FaEyeSlash className="text-secondary ms-2" onClick={e=>{
                     setVisible(prev=>({...prev, accountPassword:true }))
                 }}/>
                 )}
@@ -591,18 +604,17 @@ export default function AccountChange() {
                     type={visible.accountPassword ? "type" : "password"} 
                     name="accountPassword"
                     value={account.accountPassword} onChange={changeStringValue}
-                    placeholder="대문자,소문자,숫자,특수문자 포함 8-16자 이내"
+                    placeholder="확인용 비밀번호 입력"
                     onBlur={checkAccountPassword}
                     className={result.accountPassword}/>
-                <div className="valid-feedback">비밀번호 설정이 완료되었습니다</div>
-                <div className="invalid-feedback">영문 대/소문자, 숫자, 특수문자를 반드시 포함하여 작성하세요</div>
+                <div className="invalid-feedback">비밀번호는 반드시 입력하셔야 합니다</div>
             </Col>
         </Row>
 
         <Row className="my-5">
             <Col>
                 <Button variant="success" size="lg" className="w-100" 
-                        //disabled={allValid === false} 
+                        disabled={allValid === false} 
                         onClick={sendData}>
                     <FaSquarePen/>
                     <span className="ms-2">회원 수정하기</span>
