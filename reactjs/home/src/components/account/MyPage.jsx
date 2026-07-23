@@ -6,7 +6,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { apiClient } from "@utils/reaxios";
 import { Link } from "react-router-dom";
-import { FaLock } from "react-icons/fa6";
+import { FaLock, FaSquarePen } from "react-icons/fa6";
 
 export default function MyPage() {
     //jotai state에 저장된 내 정보를 가져와서 서버에 나머지 정보를 요청해야함
@@ -107,6 +107,11 @@ export default function MyPage() {
                 <Button as={Link} to="/account/password" variant="danger">
                     <FaLock/>
                     <span className="ms-2">비밀번호 변경</span>
+                </Button>
+                <Button as={Link} to="/account/change" variant="warning"
+                        className="ms-4">
+                    <FaSquarePen/>
+                    <span className="ms-2">개인정보 변경</span>
                 </Button>
             </Col>
         </Row>
