@@ -9,8 +9,13 @@ import { useNavigate } from "react-router-dom";
 import { apiClient, certClient } from "@utils/reaxios";
 import Swal from "sweetalert2";
 
+import { ko } from "date-fns/locale";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+
+import dayjs from "dayjs";
+import "dayjs/locale/ko";
+dayjs.locale("ko");//한국어로 설정
 
 export default function AccountChange() {
     //kakao post
@@ -501,13 +506,23 @@ export default function AccountChange() {
                             selected={account.accountBirth}
                             onChange={(date)=>{
                                 //date가 우리가 원하는 형식이 아님(내일 변경 후 설정)
-                                setAccount(prev=>({...prev, accountBirth: date}))
+                                //→ dayjs를 이용해서 "YYYY-MM-DD" 형태로 변경
+                                const convertDate = dayjs(date).format("YYYY-MM-DD");
+                                console.log("convertDate", convertDate);
+                                setAccount(prev=>({...prev, accountBirth: convertDate}))
                             }}
                             onBlur={checkAccountBirth}
                             dateFormat={"yyyy-MM-dd"}
                             customInput={<Form.Control/>}
                             wrapperClassName={`w-100`}
-                            className={result.accountBirth}/>
+                            className={result.accountBirth}
+                            
+                            showYearDropdown
+                            showMonthDropdown
+                            dropdownMode="select"
+
+                            locale={ko}
+                            />
                 {/* <Form.Control type="date" name="accountBirth"
                     value={account.accountBirth} onChange={changeStringValue}
                     onBlur={checkAccountBirth}
