@@ -6,7 +6,7 @@ import NeedPermission from "@error/NeedPermission";
 export default function Admin({ children }) {
     const isLogin = useAtomValue(isLoginState);
     const isAdmin = useAtomValue(isAdminState);
-    console.log("isLogin", isLogin, "isAdmin", isAdmin);
+    //console.log("isLogin", isLogin, "isAdmin", isAdmin);
 
     if(isLogin !== true) {//로그인 상태가 아니라면
         return (//오류 화면을 보여주고 끝내라!
