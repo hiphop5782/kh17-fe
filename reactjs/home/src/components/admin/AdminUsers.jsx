@@ -1,5 +1,5 @@
 import Jumbotron from "@templates/Jumbotron"
-import { useCallback, useState } from "react"
+import { useCallback, useMemo, useState } from "react"
 import { Button, Col, Form, Row, Table } from "react-bootstrap";
 import { FaEraser, FaMagnifyingGlass } from "react-icons/fa6";
 import { apiClient } from "@utils/reaxios";
@@ -12,6 +12,10 @@ import "react-datepicker/dist/react-datepicker.css";
 import dayjs from "dayjs";
 import "dayjs/locale/ko";
 dayjs.locale("ko");//한국어로 설정
+
+//등급을 미리 정의 (갱신의 여지가 없고 화면의 변화와 관계가 없으므로 바깥에 만듦)
+const levelList = ["브론즈","실버","골드","다이아","플래티넘"];
+const fruitList = ["사과", "딸기", "바나나"];
 
 export default function AdminUsers() {
     //state
@@ -26,7 +30,8 @@ export default function AdminUsers() {
         accountLoginBegin : "", accountLoginEnd : "",
         accountPointMin : "", accountPointMax : "",
         accountLevels : [],
-        accountBlock : ""
+        accountBlock : "",
+        fruits:[]
     });
     const changeStringValue = useCallback(e=>{
         const { name, value } = e.target;
@@ -44,6 +49,44 @@ export default function AdminUsers() {
             [name] : replacement2
         }));
     }, []);
+    const changeListValue = useCallback(e=>{
+        const { name, value, checked } = e.target;
+
+        if(checked) {//체크되었다면
+            setCondition(prev=>({
+                ...prev,
+                // [name] : [ ...prev.accountLevels , value ]
+                // [name] : [ ...prev["accountLevels"] , value ]
+                [name] : [ ...prev[name] , value ]
+            }));
+        }
+        else {//체크되지 않았다면
+            setCondition(prev=>({
+                ...prev,
+                [name] : prev[name].filter(level => level !== value)
+            }));
+        }
+    }, []);
+    const changeListValueAll = useCallback(e=>{
+        const { name, checked } = e.target;
+        if(checked) {//전체선택 ON
+            setCondition(prev=>({
+                ...prev,
+                // [name] : ["브론즈","실버","골드","다이아","플래티넘"]
+                // [name] : levelList//절대안됨(얕은복사, shallow copy)
+                [name] : [...levelList]//깊은복사(deep copy)
+            }));
+        }   
+        else {//전체선택 OFF
+            setCondition(prev=>({
+                ...prev,
+                [name] : []
+            }));
+        }     
+    }, []);
+    const checkedAll = useMemo(()=>{
+        return condition.accountLevels.length == levelList.length;
+    }, [condition.accountLevels]);
 
     const [list, setList] = useState([]);
     const [last, setLast] = useState(true);
@@ -278,6 +321,39 @@ export default function AdminUsers() {
                             name="accountBlock" value="N"
                             checked={condition.accountBlock === "N"}
                             onChange={e=>setCondition(prev=>({...prev, accountBlock:"N"}))}/>
+            </Col>
+        </Row>
+
+        <Row className="mt-2">
+            <Form.Label column sm={3}>등급</Form.Label>
+            <Col sm={9}>
+                <Form.Check type="checkbox" label="전체선택"
+                    name="accountLevels"
+                    onChange={changeListValueAll}
+                    checked={checkedAll}/>
+                {levelList.map((level, index)=>(
+                <Form.Check type="checkbox" label={level} key={index}
+                    name="accountLevels" value={level}
+                    onChange={changeListValue}
+                    checked={condition.accountLevels.includes(level)}/>
+                ))}
+            </Col>
+        </Row>
+
+
+        <Row className="mt-2">
+            <Form.Label column sm={3}>연습용</Form.Label>
+            <Col sm={9}>
+                <Form.Check type="checkbox" label="전체선택"
+                    name="fruits"
+                    onChange={changeListValueAll}
+                    checked={checkedAll}/>
+                {fruitList.map((fruit, index)=>(
+                <Form.Check type="checkbox" label={fruit} key={index}
+                    name="fruits" value={fruit}
+                    onChange={changeListValue}
+                    checked={condition.fruits.includes(fruit)}/>
+                ))}
             </Col>
         </Row>
 
