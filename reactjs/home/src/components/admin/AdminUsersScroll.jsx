@@ -136,7 +136,7 @@ export default function AdminUsersScroll() {
 
     const sendMore = useCallback(async e=>{
         console.log("더보기가 실행하려고 생각중입니다");
-        
+
         if(loading.current === true) return;//이미 로딩중이면 하지마!
         loading.current = true;//로딩시작했다
 
@@ -190,8 +190,9 @@ export default function AdminUsersScroll() {
     }, [sendMore]);
 
     useEffect(()=>{
-        //console.log("화면시작했다");
+        // console.log("화면시작했다");
         const listener = throttle(()=>{
+        // const listener = ()=>{
             //console.log("스크롤 움직였어!");
             const percent = getScrollPercent();
             console.log("현재 스크롤의 위치 : " + percent.toFixed(2) + "%");
@@ -203,6 +204,7 @@ export default function AdminUsersScroll() {
                 }
             }
         }, 250);
+        // };
 
         window.addEventListener("scroll", listener);
 
