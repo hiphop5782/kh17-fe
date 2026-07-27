@@ -1,7 +1,7 @@
 import Jumbotron from "@templates/Jumbotron"
 import { useCallback, useMemo, useState } from "react"
 import { Button, Col, Form, Row, Table } from "react-bootstrap";
-import { FaEraser, FaMagnifyingGlass } from "react-icons/fa6";
+import { FaChevronDown, FaEraser, FaMagnifyingGlass } from "react-icons/fa6";
 import { apiClient } from "@utils/reaxios";
 import { TbTilde } from "react-icons/tb";
 
@@ -37,6 +37,7 @@ export default function AdminUsers() {
         accountBlock : "",
         //fruits:[]
     });
+
     const changeStringValue = useCallback(e=>{
         const { name, value } = e.target;
         setCondition(prev=>({
@@ -99,14 +100,38 @@ export default function AdminUsers() {
 
     const [list, setList] = useState([]);
     const [last, setLast] = useState(true);
+    const [size, setSize] = useState(10);
+    const lastAccountId = useMemo(()=>{
+        if(list.length === 0) return null;
+        //return list[list.length-1].accountId;//마지막
+        return list.at(-1).accountId;
+    }, [list]);
 
     //검색
     const sendSearch = useCallback(async e=>{
         e.preventDefault();//기본 form 전송 차단
         
-        const { data } = await apiClient.post("/account/search", condition);
+        // const { data } = await apiClient.post("/account/search", condition);
+        const copy = {
+            //객체에 데이터를 추가할 때 이름을 적지 않으면 해당 변수명과 동일하게 생김
+            ...condition, lastAccountId, size
+        };
+        const { data } = await apiClient.post("/account/search", copy);
+
         setList(data.list);//덮어쓰기
         // setList(prev=>[...prev, ...data.list]);//이어쓰기
+        setLast(data.last);
+    }, [condition]);
+
+    const sendMore = useCallback(async e=>{
+        const copy = {
+            //객체에 데이터를 추가할 때 이름을 적지 않으면 해당 변수명과 동일하게 생김
+            ...condition, lastAccountId, size
+        };
+        const { data } = await apiClient.post("/account/search", copy);
+
+        // setList(data.list);//덮어쓰기
+        setList(prev=>[...prev, ...data.list]);//이어쓰기
         setLast(data.last);
     }, [condition]);
 
@@ -368,6 +393,19 @@ export default function AdminUsers() {
         </Row>
         */}
 
+        <Row className="mt-2">
+            <Form.Label column sm={3}>결과 수</Form.Label>
+            <Col sm={9}>
+                <Form.Select onChange={e=>setSize(parseInt(e.target.value))}
+                            value={size}>
+                    <option value="10">10개씩 보기</option>
+                    <option value="20">20개씩 보기</option>
+                    <option value="50">50개씩 보기</option>
+                    <option value="100">100개씩 보기</option>
+                </Form.Select>
+            </Col>
+        </Row>
+
         <Row className="mt-4 text-end">
             <Col>
                 {/* 
@@ -410,6 +448,19 @@ export default function AdminUsers() {
                 </Table>
             </Col>
         </Row>
+
+        {/* 더보기 */}
+        {last === false && (
+        <Row className="mt-4">
+            <Col>
+                <Button variant="info" size="lg" className="w-100" onClick={sendMore}>
+                    <FaChevronDown/>
+                    <span className="mx-2">더보기</span>
+                    <FaChevronDown/>
+                </Button>
+            </Col>
+        </Row>
+        )}
 
     </>)
 }
