@@ -121,7 +121,7 @@ export default function AdminUsers() {
         setList(data.list);//덮어쓰기
         // setList(prev=>[...prev, ...data.list]);//이어쓰기
         setLast(data.last);
-    }, [condition]);
+    }, [condition, lastAccountId, size]);
 
     const sendMore = useCallback(async e=>{
         const copy = {
@@ -133,7 +133,7 @@ export default function AdminUsers() {
         // setList(data.list);//덮어쓰기
         setList(prev=>[...prev, ...data.list]);//이어쓰기
         setLast(data.last);
-    }, [condition]);
+    }, [condition, lastAccountId, size]);
 
     //view
     return (<>
