@@ -14,8 +14,12 @@ import "dayjs/locale/ko";
 dayjs.locale("ko");//한국어로 설정
 
 //등급을 미리 정의 (갱신의 여지가 없고 화면의 변화와 관계가 없으므로 바깥에 만듦)
-const levelList = ["브론즈","실버","골드","다이아","플래티넘"];
-const fruitList = ["사과", "딸기", "바나나"];
+// const levelList = ["브론즈","실버","골드","다이아","플래티넘"];
+// const fruitList = ["사과", "딸기", "바나나"];
+const dataList = {
+    accountLevels : ["브론즈","실버","골드","다이아","플래티넘"],
+    //fruits : ["사과", "딸기", "바나나"]
+};
 
 export default function AdminUsers() {
     //state
@@ -31,7 +35,7 @@ export default function AdminUsers() {
         accountPointMin : "", accountPointMax : "",
         accountLevels : [],
         accountBlock : "",
-        fruits:[]
+        //fruits:[]
     });
     const changeStringValue = useCallback(e=>{
         const { name, value } = e.target;
@@ -74,7 +78,8 @@ export default function AdminUsers() {
                 ...prev,
                 // [name] : ["브론즈","실버","골드","다이아","플래티넘"]
                 // [name] : levelList//절대안됨(얕은복사, shallow copy)
-                [name] : [...levelList]//깊은복사(deep copy)
+                // [name] : [...levelList]//깊은복사(deep copy)
+                [name] : [...dataList[name]]
             }));
         }   
         else {//전체선택 OFF
@@ -85,8 +90,12 @@ export default function AdminUsers() {
         }     
     }, []);
     const checkedAll = useMemo(()=>{
-        return condition.accountLevels.length == levelList.length;
-    }, [condition.accountLevels]);
+        // return condition.accountLevels.length == levelList.length;
+        return {
+            accountLevels : condition.accountLevels.length === dataList.accountLevels.length,
+            //fruits : condition.fruits.length === dataList.fruits.length,
+        };
+    }, [condition]);
 
     const [list, setList] = useState([]);
     const [last, setLast] = useState(true);
@@ -330,8 +339,8 @@ export default function AdminUsers() {
                 <Form.Check type="checkbox" label="전체선택"
                     name="accountLevels"
                     onChange={changeListValueAll}
-                    checked={checkedAll}/>
-                {levelList.map((level, index)=>(
+                    checked={checkedAll.accountLevels}/>
+                {dataList.accountLevels.map((level, index)=>(
                 <Form.Check type="checkbox" label={level} key={index}
                     name="accountLevels" value={level}
                     onChange={changeListValue}
@@ -341,14 +350,15 @@ export default function AdminUsers() {
         </Row>
 
 
+        {/* 
         <Row className="mt-2">
             <Form.Label column sm={3}>연습용</Form.Label>
             <Col sm={9}>
                 <Form.Check type="checkbox" label="전체선택"
                     name="fruits"
                     onChange={changeListValueAll}
-                    checked={checkedAll}/>
-                {fruitList.map((fruit, index)=>(
+                    checked={checkedAll.fruits}/>
+                {dataList.fruits.map((fruit, index)=>(
                 <Form.Check type="checkbox" label={fruit} key={index}
                     name="fruits" value={fruit}
                     onChange={changeListValue}
@@ -356,6 +366,7 @@ export default function AdminUsers() {
                 ))}
             </Col>
         </Row>
+        */}
 
         <Row className="mt-4 text-end">
             <Col>
