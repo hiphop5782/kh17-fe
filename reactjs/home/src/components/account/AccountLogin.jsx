@@ -48,8 +48,21 @@ export default function AccountLogin() {
             //로그인 성공 → data를 jotai storage에 저장하자!
             //console.log(data);
             //setLoginUser(data);//jotai storage에 저장 완료
-            loginAction(data);//jotai setter atom 사용
-            navigate("/");
+            //loginAction(data);//jotai setter atom 사용
+
+            //data에서 needUpdate와 나머지를 뽑아내서 나눠서 사용 (구조 분해 할당)
+            const { needUpdate, ...userData } = data;
+            loginAction(userData);
+
+            //로그인 성공 시에도 경우가 나눠진다
+            // - data에 needUpdate 항목의 값에 따라 이동하는 페이지가 달라진다
+            if(needUpdate) {//비밀번호를 바꾼지 오래되어 업데이트가 필요한 상황
+                navigate("/account/needUpdate");
+            }
+            else {//업데이트가 필요하지 않은 일반적인 상황
+                navigate("/");
+            }
+
         }
         catch(e){
             //로그인 실패가 경우가 나눠진다
