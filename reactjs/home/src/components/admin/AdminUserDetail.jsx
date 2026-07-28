@@ -4,6 +4,9 @@ import { useParams } from "react-router-dom"
 import { apiClient } from "@utils/reaxios";
 import { Button, Col, Placeholder, Row } from "react-bootstrap";
 import LoadingText from "@templates/LoadingText";
+import { FaLock, FaUnlock, FaUserLock } from "react-icons/fa6";
+import Swal from "sweetalert2";
+import { toast } from "react-toastify";
 
 export default function AdminUserDetail() {
     
@@ -27,6 +30,33 @@ export default function AdminUserDetail() {
         if(account.accountAddress1 === null) return "";
         if(account.accountAddress2 === null) return "";
         return `[${account.accountPost}] ${account.accountAddress1} ${account.accountAddress2}`;
+    }, [account]);
+
+
+    const block = useCallback(async ()=>{
+        //확인창
+        const result = await Swal.fire({
+            title:`정말 ${account.accountBlock === "N" ? "차단" : "차단 해제"}하시겠습니까?`,
+            icon:"warning",
+            showCancelButton:true,
+            confirmButtonText:"확인",
+            cancelButtonText:"취소",
+            confirmButtonColor:"#d63031",
+            cancelButtonColor:"#b2bec3"
+        });
+        if(result.isConfirmed === false) return;//취소
+
+        const { data } = await apiClient.patch(`/admin/block/${accountId}`);
+        //console.log(data);
+        setAccount(data);
+
+        //알림 처리
+        if(data.accountBlock === "Y") {
+            toast.error("회원 차단이 완료되었습니다");
+        }
+        else {
+            toast.success("회원 차단이 해제되었습니다");
+        }
     }, [account]);
 
     //로딩중인 화면을 따로 보여줄 때
@@ -98,6 +128,13 @@ export default function AdminUserDetail() {
         </Row>
 
         <Row className="mt-4">
+            <Col sm={3} className="fw-bold text-info">차단상태</Col>
+            <Col sm={9} className="text-secondary">
+                <LoadingText value={account?.accountBlock} width={50}/>
+            </Col>
+        </Row>
+
+        <Row className="mt-4">
             <Col sm={3} className="fw-bold text-info">가입일</Col>
             <Col sm={9} className="text-secondary">
                 <LoadingText value={account?.accountJoin} width={240}/>
@@ -122,6 +159,24 @@ export default function AdminUserDetail() {
             <Col sm={3} className="fw-bold text-info">상태메세지</Col>
             <Col sm={9} className="text-secondary">
                 <LoadingText value={account?.accountMessage} width={"100%"} line={3}/>
+            </Col>
+        </Row>
+
+        {/* 관리자 제어용 버튼들 */}
+        <Row className="mt-5">
+            <Col className="text-end">
+                {/* 차단/해제 버튼 : account.accountBlock 상태에 따라 달라짐 */}
+                <Button variant="danger" className="w-md-auto" onClick={block}>
+                    {account.accountBlock === "Y" ? (<>
+                        <FaUnlock/>
+                        <span className="ms-2">차단 해제하기</span>
+                    </>) : (<>
+                        <FaLock/>
+                        <span className="ms-2">차단 설정하기</span>
+                    </>)}
+                </Button>
+
+                {/* 임시 비밀번호 발급 */}
             </Col>
         </Row>
 
