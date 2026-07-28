@@ -4,9 +4,11 @@ import { useParams } from "react-router-dom"
 import { apiClient } from "@utils/reaxios";
 import { Button, Col, Placeholder, Row } from "react-bootstrap";
 import LoadingText from "@templates/LoadingText";
-import { FaLock, FaUnlock, FaUserLock } from "react-icons/fa6";
+import { FaLock, FaSpinner, FaUnlock, FaUserLock } from "react-icons/fa6";
 import Swal from "sweetalert2";
 import { toast } from "react-toastify";
+import { MdOutlinePassword } from "react-icons/md";
+import { certClient } from "../../utils/reaxios";
 
 export default function AdminUserDetail() {
     
@@ -58,6 +60,37 @@ export default function AdminUserDetail() {
             toast.success("회원 차단이 해제되었습니다");
         }
     }, [account]);
+
+    // const sending = useRef(false);
+    const [sending, setSending] = useState(false);
+
+    const createTempPassword = useCallback(async ()=>{
+        //확인창
+        const result = await Swal.fire({
+            title:`임시 비밀번호로 변경하시겠습니까?`,
+            icon:"warning",
+            showCancelButton:true,
+            confirmButtonText:"확인",
+            cancelButtonText:"취소",
+            confirmButtonColor:"#d63031",
+            cancelButtonColor:"#b2bec3"
+        });
+        if(result.isConfirmed === false) return;//취소
+
+        if(sending === true) return;
+        setSending(true);
+
+        try {
+            const { data } = await apiClient.post(`/admin/tempPassword/${accountId}`);
+            toast.success("임시 비밀번호가 발송되었습니다");
+        }
+        catch(e) {
+            toast.error("이메일 발송에 실패하였습니다");
+        }
+
+        setSending(false);
+    }, []);
+
 
     //로딩중인 화면을 따로 보여줄 때
     // if(account === null) {
@@ -167,7 +200,7 @@ export default function AdminUserDetail() {
             <Col className="text-end">
                 {/* 차단/해제 버튼 : account.accountBlock 상태에 따라 달라짐 */}
                 <Button variant="danger" className="w-md-auto" onClick={block}>
-                    {account.accountBlock === "Y" ? (<>
+                    {account?.accountBlock === "Y" ? (<>
                         <FaUnlock/>
                         <span className="ms-2">차단 해제하기</span>
                     </>) : (<>
@@ -177,6 +210,16 @@ export default function AdminUserDetail() {
                 </Button>
 
                 {/* 임시 비밀번호 발급 */}
+                <Button variant="warning" className="w-md-auto" onClick={createTempPassword}>
+                    {sending === false && (<>
+                        <MdOutlinePassword />
+                        <span className="ms-2">비밀번호 변경하기</span>
+                    </>)}
+                    {sending === true && (<>
+                        <FaSpinner className="spin"/>
+                        <span className="ms-2">변경메일 발송중..</span>
+                    </>)}
+                </Button>
             </Col>
         </Row>
 
