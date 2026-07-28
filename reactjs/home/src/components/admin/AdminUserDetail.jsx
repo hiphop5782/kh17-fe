@@ -16,7 +16,7 @@ export default function AdminUserDetail() {
     }, []);
 
     const loadData = useCallback(async ()=>{
-        const { data } = await apiClient.get(`/account/${accountId}`);
+        const { data } = await apiClient.get(`/admin/${accountId}`);
         setAccount(data);
     }, []);
 
