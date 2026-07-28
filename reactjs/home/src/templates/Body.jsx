@@ -1,6 +1,8 @@
 import { Route, Routes } from "react-router-dom";
 import Home from "@components/Home";
+
 import NotFound from "@error/NotFound";
+import AccountBlock from "@error/AccountBlock";
 
 import CountryList from "@components/country/CountryList";
 import CountryAdd from "@components/country/CountryAdd";
@@ -22,6 +24,7 @@ import AccountJoinFail from "@components/account/AccountJoinFail";
 import AccountLogin from "@components/account/AccountLogin";
 import AccountPassword from "@components/account/AccountPassword";
 import AccountChange from "@components/account/AccountChange";
+
 import MyPage from "@components/account/MyPage";
 
 import AdminUsers from "@components/admin/AdminUsers";
@@ -70,6 +73,9 @@ export default function Body() {
 
         {/* 세션테스트 */}
         <Route path="/session/test" element={<TestMain/>}/>
+
+        {/* error */}
+        <Route path="/account/block" element={<AccountBlock/>}/>
 
         {/* fallback route */}
         <Route path="*" element={<NotFound/>}/>

@@ -52,8 +52,22 @@ export default function AccountLogin() {
             navigate("/");
         }
         catch(e){
-            //로그인 실패
-            await Swal.fire("정보가 일치하지 않습니다");
+            //로그인 실패가 경우가 나눠진다
+            //- 404 : 정보 불일치
+            //- 403 : 차단된 회원
+            //console.log(Object.keys(e));
+            //console.log(e.response);
+            //console.log(e.status);//우리가 원하는거
+            //console.log(typeof e.status);//자료형 확인
+            if(e.status === 403) {
+                navigate("/account/block");
+            }
+            else if(e.status === 404) {
+                await Swal.fire("정보가 일치하지 않습니다");
+            }
+            else {//500
+                await Swal.fire("일시적인 서버 오류입니다.\n잠시 후 실행해주세요");
+            }
         }
     }, [account]);
 
