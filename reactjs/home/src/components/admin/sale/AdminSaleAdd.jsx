@@ -4,6 +4,8 @@ import { Button, Col, Form, Row } from "react-bootstrap";
 import { FaPlus, FaXmark } from "react-icons/fa6";
 import { apiClient } from "@utils/reaxios";
 import { toast } from "react-toastify";
+import Editor from "react-simple-wysiwyg";
+import NoImage from "@assets/images/no-image.png";
 
 export default function AdminSaleAdd() {
     //state
@@ -111,7 +113,7 @@ export default function AdminSaleAdd() {
             saleStock : ""
         });
         
-        console.log(data);
+        //console.log(data);
     }, [sale, discount, thumbnail]);
 
     //할인을 해제하면 할인가를 삭제
@@ -120,6 +122,26 @@ export default function AdminSaleAdd() {
             setSale(prev=>({...prev, saleDiscountPrice : ""}))
         }
     }, [discount]);
+
+    //미리보기에 넣을 src 데이터
+    const [previewSrc, setPreviewSrc] = useState(null);
+    //썸네일이 변경되면 미리보기를 갱신 (createObjectURL + revokeObjectURL)
+    useEffect(()=>{
+        if(thumbnail === null) {//이미지가 없으면
+            setPreviewSrc(null);//미리보기도 없음
+            return;
+        }
+        
+        //이미지 미리보기 주소 생성
+        const previewUrl = URL.createObjectURL(thumbnail);
+        setPreviewSrc(previewUrl);
+
+        //클린업 함수
+        return ()=>{
+            //생성된 미리보기 주소 제거
+            URL.revokeObjectURL(previewUrl);
+        };
+    }, [thumbnail]);
 
     //view
     return (<>
@@ -177,9 +199,22 @@ export default function AdminSaleAdd() {
         <Row className="mt-4">
             <Form.Label column sm={3}>상세설명</Form.Label>
             <Col sm={9}>
+                {/* 
                 <Form.Control as="textarea" rows={6} 
                         name="saleContent" value={sale.saleContent}
                         onChange={changeStringValue} placeholder="상품에 대한 설명 작성"/>
+                */}
+
+                <Editor name="saleContent" value={sale.saleContent} 
+                        onChange={changeStringValue}
+                        containerProps={ 
+                            { 
+                                style : {
+                                    resize : "none",//or vertical
+                                    minHeight : 250
+                                } 
+                            } 
+                        }/>
             </Col>
         </Row>
 
@@ -197,6 +232,11 @@ export default function AdminSaleAdd() {
                     </Button>
                     )}
                 </div>
+            </Col>
+        </Row>
+        <Row className="mt-2">
+            <Col>
+                <img src={previewSrc ?? NoImage} width={100} height={100}/>
             </Col>
         </Row>
 
