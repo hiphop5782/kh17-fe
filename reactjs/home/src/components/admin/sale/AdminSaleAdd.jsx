@@ -39,6 +39,20 @@ export default function AdminSaleAdd() {
         thumbnailRef.current.value = "";
     }, [thumbnail]);
 
+    //상세이미지 관련 도구들
+    const [detailImages, setDetailImages] = useState([]);
+    const detailImagesRef = useRef();
+    const changeDetailImages = useCallback(e=>{
+        setDetailImages(e.target.files);
+    }, []);
+    const clearDetailImages = useCallback(e=>{
+        setDetailImages([]);
+    }, []);
+    useEffect(()=>{
+        if(detailImages.length > 0) return;//이미지 있으면 Pass!
+        detailImagesRef.current.value = "";
+    }, [detailImages]);
+
     //callback
     const changeStringValue = useCallback((e)=>{
         const { name, value } = e.target;
@@ -94,12 +108,19 @@ export default function AdminSaleAdd() {
 
         // [2] 2개의 파트 데이터를 전송
         const form = new FormData();
+        
         form.append("sale", new Blob(
             [ JSON.stringify(copy) ] ,
             { type : "application/json" }
         ));//데이터 추가
+
         form.append("thumbnail", thumbnail);//썸네일 추가
 
+        //같은 종류의 데이터가 여러개일 경우 같은이름으로 계속 첨부 (배열을 한번에 첨부하는게 아님) → List로 추출
+        detailImages.forEach(img=>{
+            form.append("detailImages", img);
+        });
+        
         const { data } = await apiClient.post("/sale/", form);
 
         toast.success("상품 등록이 완료되었습니다");
@@ -114,7 +135,7 @@ export default function AdminSaleAdd() {
         });
         
         //console.log(data);
-    }, [sale, discount, thumbnail]);
+    }, [sale, discount, thumbnail, detailImages]);
 
     //할인을 해제하면 할인가를 삭제
     useEffect(()=>{
@@ -237,6 +258,23 @@ export default function AdminSaleAdd() {
         <Row className="mt-2">
             <Col>
                 <img src={previewSrc ?? NoImage} width={100} height={100}/>
+            </Col>
+        </Row>
+
+        {/* 상세이미지 */}
+        <Row className="mt-4">
+            <Form.Label column sm={3}>상세이미지</Form.Label>
+            <Col sm={9}>
+                <div className="d-flex">
+                    <Form.Control type="file" accept="image/*" multiple
+                        ref={detailImagesRef} 
+                        onInput={changeDetailImages}/>
+                    {detailImages.length > 0 && (
+                    <Button variant="danger" onClick={clearDetailImages} className="ms-2">
+                        <FaXmark/>                        
+                    </Button>
+                    )}
+                </div>
             </Col>
         </Row>
 
