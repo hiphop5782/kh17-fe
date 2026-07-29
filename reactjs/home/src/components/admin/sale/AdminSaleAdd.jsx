@@ -1,7 +1,7 @@
 import Jumbotron from "@templates/Jumbotron";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Button, Col, Form, Row } from "react-bootstrap";
-import { FaPlus } from "react-icons/fa6";
+import { FaPlus, FaXmark } from "react-icons/fa6";
 import { apiClient } from "@utils/reaxios";
 import { toast } from "react-toastify";
 
@@ -15,6 +15,27 @@ export default function AdminSaleAdd() {
         saleContent : "",
         saleStock : ""
     });
+    const [discount, setDiscount] = useState(false);
+
+    //썸네일(대표이미지) 파일 state
+    const [thumbnail, setThumbnail] = useState(null);
+    const thumbnailRef = useRef();
+
+    //(+변경사항) 2023년 3월 이후로 취소버튼은 onchange, oninput으로 감지되지 않습니다.
+    const changeThumbnail = useCallback(e=>{
+        const file = e.target.files[0];
+        setThumbnail(file);
+    }, []);
+    const clearThumbnail = useCallback(()=>{
+        setThumbnail(null);
+    }, []);
+    useEffect(()=>{
+        if(thumbnail !== null) return;
+
+        //파일선택창은 비어있는 value밖에 줄 수 없어서 리액트에서 모든 상황을 제어할 수 없다 (HTML보안 이슈)
+        //태그를 직접 제어하는 방향으로 우회 처리한다 (ref 사용)
+        thumbnailRef.current.value = "";
+    }, [thumbnail]);
 
     //callback
     const changeStringValue = useCallback((e)=>{
@@ -35,10 +56,57 @@ export default function AdminSaleAdd() {
     }, []);
 
     const sendData = useCallback(async ()=>{
-        const { data } = await apiClient.post("/sale/", sale);
+        //discount가 false면 sale에서 saleDiscountPrice를 제거
+        //- 원본을 절대로 지우면 안됨
+
+        // const copy = {...sale};
+        // if(discount === false)
+        //     delete copy.saleDiscountPrice;
+        // const { data } = await apiClient.post("/sale/", copy);
+
+        const { saleDiscountPrice, ...copy } = sale;
+        if(discount === true)
+            copy.saleDiscountPrice = saleDiscountPrice;
+        //const { data } = await apiClient.post("/sale/", copy);
+
+        //보내는 방식이 달라짐 (application/json → multipart/form-data)
+        //- 그런데 Form이 없네? 그럼 만들면 된다 (FormData)
+        //- <form> 대신 FormData를 쓰고, <input> 대신 append를 이용해서 key=value를 추가
+        //- copy를 FormData로 변환한 뒤 전송하면 파일도 이곳에 첨부가 가능하다
+        const form = new FormData();
+        form.append("saleName", copy.saleName);
+        form.append("saleCategory", copy.saleCategory);
+        form.append("saleOriginalPrice", copy.saleOriginalPrice);
+        if(discount) 
+            form.append("saleDiscountPrice", copy.saleDiscountPrice);
+        form.append("saleStock", copy.saleStock);
+        form.append("saleContent", copy.saleContent);
+
+        //썸네일을 form에 추가 (데이터와 파일을 같은레벨로 처리)
+        form.append("thumbnail", thumbnail);
+
+        const { data } = await apiClient.post("/sale/", form);
+
         toast.success("상품 등록이 완료되었습니다");
+
+        setSale({
+            saleName : "",
+            saleCategory : "",
+            saleOriginalPrice : "",
+            saleDiscountPrice : "",
+            saleContent : "",
+            saleStock : ""
+        });
+        
         console.log(data);
-    }, [sale]);
+    }, [sale, discount, thumbnail]);
+
+    //할인을 해제하면 할인가를 삭제
+    useEffect(()=>{
+        if(discount === false) {
+            setSale(prev=>({...prev, saleDiscountPrice : ""}))
+        }
+    }, [discount]);
 
     //view
     return (<>
@@ -68,13 +136,22 @@ export default function AdminSaleAdd() {
             </Col>
         </Row>
 
-        <Row className="mt-4">
+        <Row className="mt-2">
+            <Col sm={{offset:3, span:9}}>
+                <Form.Check type="switch" label="할인 적용"
+                            checked={discount}
+                            onChange={e=>setDiscount(e.target.checked)}/>
+            </Col>
+        </Row>
+        {discount && (
+        <Row className="mt-2">
             <Form.Label column sm={3}>할인가</Form.Label>
             <Col sm={9}>
                 <Form.Control type="text" name="saleDiscountPrice" value={sale.saleDiscountPrice}
                         onChange={changeNumericValue} placeholder="e.g., 1990000"/>
             </Col>
         </Row>
+        )}
 
         <Row className="mt-4">
             <Form.Label column sm={3}>재고수량</Form.Label>
@@ -90,6 +167,23 @@ export default function AdminSaleAdd() {
                 <Form.Control as="textarea" rows={6} 
                         name="saleContent" value={sale.saleContent}
                         onChange={changeStringValue} placeholder="상품에 대한 설명 작성"/>
+            </Col>
+        </Row>
+
+        {/* 썸네일 */}
+        <Row className="mt-4">
+            <Form.Label column sm={3}>대표이미지</Form.Label>
+            <Col sm={9}>
+                <div className="d-flex">
+                    <Form.Control type="file" accept="image/*" 
+                        ref={thumbnailRef} 
+                        onInput={changeThumbnail}/>
+                    {thumbnail !== null && (
+                    <Button variant="danger" onClick={clearThumbnail} className="ms-2">
+                        <FaXmark/>                        
+                    </Button>
+                    )}
+                </div>
             </Col>
         </Row>
 
