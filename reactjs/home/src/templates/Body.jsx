@@ -32,6 +32,8 @@ import AdminUsers from "@components/admin/AdminUsers";
 import AdminUsersScroll from "@components/admin/AdminUsersScroll";
 import AdminUserDetail from "@components/admin/AdminUserDetail";
 
+import AdminSaleAdd from "@components/admin/sale/AdminSaleAdd";
+
 import TestMain from "@components/session/TestMain";
 
 import Private from "@guard/Private";
@@ -72,6 +74,9 @@ export default function Body() {
         <Route path="/admin/users" element={<Admin><AdminUsers/></Admin>}></Route>
         <Route path="/admin/users2" element={<Admin><AdminUsersScroll/></Admin>}></Route>
         <Route path="/admin/detail/:accountId" element={<Admin><AdminUserDetail/></Admin>}></Route>
+
+        <Route path="/admin/saleAdd" element={<Admin><AdminSaleAdd/></Admin>}></Route>
+
 
         {/* 세션테스트 */}
         <Route path="/session/test" element={<TestMain/>}/>
