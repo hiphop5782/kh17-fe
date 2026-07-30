@@ -8,8 +8,13 @@ import Badge from 'react-bootstrap/Badge';
 
 import NoImage from "@assets/images/no-image.png";
 
+import { FaArrowRight, FaArrowTrendDown } from "react-icons/fa6";
+
 import { apiClient } from "@utils/reaxios";
 import { Link } from "react-router-dom";
+
+//무조건 상대경로로 불러올 때 ./ 부터 시작해야함 (파일명만 적으면 안됨)
+import "./SaleList.css";
 
 export default function SaleList() {
     //data
@@ -34,6 +39,7 @@ export default function SaleList() {
         
         {/* 상품 목록 - 카드 리스트 형태로 출력 */}
         <Row className="mt-5">
+            <Col className="item-container">
             {items.map(item=>{
             
             //추가 코드 작성 (현재 회차에서만 유효한 코드)
@@ -42,35 +48,64 @@ export default function SaleList() {
             const discount = 100 - percent;
             const result = discount.toLocaleString();
 
+            const isDiscount = saleOriginalPrice > saleDiscountPrice;
+
+            const imageUrl = `${import.meta.env.VITE_SERVER_URL}/api/attach/${item.attachNo}`;
+
             return (
-            <Col key={item.saleNo} sm={6} md={4} className="mb-4">
+            <div key={item.saleNo} className="item mb-4 p-2">
                 <Card>
-                    <Card.Img variant="top" src={NoImage} />
+                    <Card.Img variant="top" 
+                            src={item.attachNo === null ? NoImage : imageUrl} 
+                            style={
+                                {
+                                    width:"auto", 
+                                    height: 200, 
+                                    objectFit: "contain",
+                                    objectPosition: "center"
+                                }
+                            }/>
                     <Card.Body>
-                        <Card.Title>{item.saleName}</Card.Title>
+                        <Card.Title className="text-truncate">{item.saleName}</Card.Title>
                         <Card.Text>
                             <div>
                                 <Badge bg="info">{item.saleCategory}</Badge>
                             </div>
-                            <div className="mt-4 fs-4">
+                            <div className="mt-4 fs-4" style={{height:120}}>
+                                {isDiscount ? (<>
                                 <s className="text-muted">{item.saleOriginalPrice.toLocaleString()} 원</s>
                                 <br/>
                                 <b className="text-danger">{item.saleDiscountPrice.toLocaleString()} 원</b>
+                                <br/>
                                 {/* ( ↓ {100 - item.saleDiscountPrice * 100 / item.saleOriginalPrice} % ) */}
                                 {/* ( ↓ {calculateDiscountPercent(item)} %) */}
-                                ( ↓ {result} %)
+                                <span className="text-success">
+                                    <FaArrowTrendDown style={{transform:"rotate(55deg)"}}/> 
+                                    {result}%
+                                </span>
+                                </>) : (<>
+                                <b>{item.saleOriginalPrice.toLocaleString()} 원</b>
+                                </>) }
                             </div>
                         </Card.Text>
 
                         <div className="text-end">
                             <Button variant="primary" as={Link} to={`/sale/detail/${item.saleNo}`}>
-                                상세보기 →
+                                <span className="me-2">상세보기</span> 
+                                <FaArrowRight/>
                             </Button>
                         </div>
                     </Card.Body>
                 </Card>
-            </Col>
+            </div>
             )})}
+            </Col>
         </Row>
     </>)
+}
+
+//내부적으로만 사용하는 하위 컴포넌트
+function ItemCard({item}) {
+
+    return (<></>)
 }
