@@ -126,6 +126,8 @@ export default function SaleDetail() {
             확인을 누르면 서버로 신호를 보내 삭제 
             그 후 목록으로 이동
             서버의 주소 : /api/sale/{saleNo} [DELETE]
+
+            * 백엔드도 관리자만 통과해야함
         */}
     </>)
 }
