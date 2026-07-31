@@ -7,6 +7,7 @@ import { FaPlus, FaSquarePen, FaXmark } from "react-icons/fa6";
 import { toast } from "react-toastify";
 import Editor from "react-simple-wysiwyg";
 import NoImage from "@assets/images/no-image.png";
+import Swal from "sweetalert2";
 
 export default function AdminSaleEdit() {
     //parameter
@@ -87,11 +88,22 @@ export default function AdminSaleEdit() {
         form.append("thumbnail", file);
         const { data } = await apiClient.patch(`/sale/thumbnail/${saleNo}`, form);
 
-        setThumbnail(file);
         setBeforeThumbnail(data.attach);//변경된 이미지를 기존 이미지 정보에 덮어쓰기
     }, []);
-    const clearThumbnail = useCallback(()=>{
-        setThumbnail(null);
+    const clearThumbnail = useCallback(async ()=>{
+        //서버에 삭제 요청을 한 뒤 제거
+        const result = await Swal.fire({
+            title:"썸네일을 삭제하시겠습니까?",
+            text:"삭제한 이미지는 다시 복구할 수 없습니다",
+            icon:"warning",
+            confirmButtonText:"네",
+            cancelButtonText:"아니오",
+            showCancelButton:true,
+        });
+        if(result.isConfirmed === false) return;
+
+        await apiClient.delete(`/sale/thumbnail/${saleNo}`);
+        setBeforeThumbnail(null);
     }, []);
     useEffect(()=>{
         if(thumbnail !== null) return;
@@ -204,10 +216,10 @@ export default function AdminSaleEdit() {
             <Col sm={{offset:3, span:9}}>
                 {/* 기존 이미지를 표시하고 제거, 변경 버튼을 추가 */}
                 {beforeThumbnail === null && (
-                <img src={NoImage} width={100} className="border"/>
+                <img src={NoImage} width={300} className="border"/>
                 ) }
                 {beforeThumbnail !== null && (
-                <img src={`${import.meta.env.VITE_SERVER_URL}/api/attach/${beforeThumbnail.attachNo}`} width={100} className="border"/>
+                <img src={`${import.meta.env.VITE_SERVER_URL}/api/attach/${beforeThumbnail.attachNo}`} width={300} className="border"/>
                 ) }
             </Col>
         </Row>
