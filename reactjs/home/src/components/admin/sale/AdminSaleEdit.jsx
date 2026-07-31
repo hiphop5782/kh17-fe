@@ -2,7 +2,7 @@ import Jumbotron from "@templates/Jumbotron";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { apiClient } from "@utils/reaxios";
-import { Button, Col, Form, Row } from "react-bootstrap";
+import { Button, Col, Form, ListGroup, ListGroupItem, Row } from "react-bootstrap";
 import { FaPlus, FaRotateRight, FaSquarePen, FaXmark } from "react-icons/fa6";
 import { toast } from "react-toastify";
 import Editor from "react-simple-wysiwyg";
@@ -16,14 +16,14 @@ export default function AdminSaleEdit() {
     //state
     const [sale, setSale] = useState(null);
     const [beforeThumbnail, setBeforeThumbnail] = useState(null);//AttachDto(DB정보)
-    const [detailImages, setDetailImages] = useState([]);
+    const [beforeDetailImages, setBeforeDetailImages] = useState([]);
 
     const loadData = useCallback(async ()=>{
         const { data } = await apiClient.get(`/sale/${saleNo}`);
         const { saleDto, thumbnail, details } = data;
         setSale(saleDto);
         setBeforeThumbnail(thumbnail);
-        setDetailImages(details);
+        setBeforeDetailImages(details);
         //할인 체크박스 처리 추가
         setDiscount(saleDto.saleOriginalPrice > saleDto.saleDiscountPrice);
     }, []);
@@ -128,6 +128,19 @@ export default function AdminSaleEdit() {
         if(canHover === false) return true;
         return hover;
     }, [hover, canHover]);
+
+    //상세이미지 제거
+    const deleteDetailImage = useCallback(async (attach)=>{
+        //확인창
+
+        //apiClient를 이용한 삭제요청
+        await apiClient.delete(`/sale/detailImage/sale/${saleNo}/attach/${attachNo}`);
+
+        //화면에서 제거
+        setBeforeDetailImages(prev=>prev.filter(
+            image => image.attachNo !== attach.attachNo
+        ));
+    }, []);
 
     //sale은 절대로 null이면 안된다
     //→ sale이 null이면 기다려야 한다
@@ -296,6 +309,38 @@ export default function AdminSaleEdit() {
                 </div>
             </Col>
         </Row>
+
+        {/* 
+            상세이미지는 등록과 동일하게 처리되도록 구현하는 것이 좋음
+            1. 기존 이미지들을 작게 표시 or 목록으로 표시 (클릭하면 뷰어가 나오게)
+            2. 기존 이미지들을 삭제할 수 있는 버튼을 제공 (누르면 경고 후 바로 삭제)
+            3. 신규 이미지들을 추가할 수 있는 입력창을 생성 (등록화면과 동일)
+            4. 수정완료 버튼을 누르면 전송하여 처리 (or 선택 시점에 등록할 수도 있음)
+        */}
+        <Row className="mt-5">
+            <Form.Label column sm={3}>상세이미지</Form.Label>
+            <Col sm={9}>
+                <ListGroup>
+                    {beforeDetailImages.map(attach=>(
+                    <ListGroupItem key={attach.attachNo}>
+                        <div className="d-flex justify-content-between">
+                            <div>
+                                {attach.attachName}
+                                <span className="ms-2 text-info">
+                                    ({(attach.attachSize/1024/1024).toFixed(2)} MB)
+                                </span>
+                            </div>
+                            <div>
+                                <FaXmark className="text-danger" 
+                                    onClick={e=>deleteDetailImage(attach)}/>
+                            </div>
+                        </div>
+                    </ListGroupItem>
+                    ))}
+                </ListGroup>
+            </Col>
+        </Row>
+
 
         {/* 수정버튼 */}
         <Row className="mt-5">
