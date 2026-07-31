@@ -132,9 +132,19 @@ export default function AdminSaleEdit() {
     //상세이미지 제거
     const deleteDetailImage = useCallback(async (attach)=>{
         //확인창
+        const result = await Swal.fire({
+            title:`정말 상품 상세 이미지를 삭제하시겠습니까?`,
+            icon:"warning",
+            showCancelButton:true,
+            confirmButtonText:"확인",
+            cancelButtonText:"취소",
+            confirmButtonColor:"#d63031",
+            cancelButtonColor:"#b2bec3"
+        });
+        if(result.isConfirmed === false) return;//취소
 
         //apiClient를 이용한 삭제요청
-        await apiClient.delete(`/sale/detailImage/sale/${saleNo}/attach/${attachNo}`);
+        await apiClient.delete(`/sale/detailImage/sale/${saleNo}/attach/${attach.attachNo}`);
 
         //화면에서 제거
         setBeforeDetailImages(prev=>prev.filter(
