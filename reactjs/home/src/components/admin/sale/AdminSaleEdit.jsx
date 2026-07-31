@@ -1,9 +1,9 @@
 import Jumbotron from "@templates/Jumbotron";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { apiClient } from "@utils/reaxios";
 import { Button, Col, Form, Row } from "react-bootstrap";
-import { FaPlus, FaSquarePen, FaXmark } from "react-icons/fa6";
+import { FaPlus, FaRotateRight, FaSquarePen, FaXmark } from "react-icons/fa6";
 import { toast } from "react-toastify";
 import Editor from "react-simple-wysiwyg";
 import NoImage from "@assets/images/no-image.png";
@@ -115,6 +115,19 @@ export default function AdminSaleEdit() {
         }
     }, [thumbnail]);
 
+    //마우스가 올라갔을때를 감지하기 위한 state
+    const [hover, setHover] = useState(false);
+    //hover가 가능한 환경 조사
+    const canHover = useMemo(()=>{
+        return window.matchMedia(
+            "(hover: hover) and (pointer: fine)"
+        ).matches;
+    }, []);
+    //모바일,데스크탑까지 고려한 최종 hover상태 판정
+    const hoverState = useMemo(()=>{
+        if(canHover === false) return true;
+        return hover;
+    }, [hover, canHover]);
 
     //sale은 절대로 null이면 안된다
     //→ sale이 null이면 기다려야 한다
@@ -201,14 +214,24 @@ export default function AdminSaleEdit() {
             <Form.Label column sm={3}>대표이미지</Form.Label>
             <Col sm={9}>
                 <div className="d-flex">
-                    <Form.Control type="file" accept="image/*" 
-                        ref={thumbnailRef} 
-                        onInput={changeThumbnail}/>
-                    {thumbnail !== null && (
-                    <Button variant="danger" onClick={clearThumbnail} className="ms-2">
-                        <FaXmark/>                        
+                    <Button as="label" variant="success">
+                        <Form.Control type="file" accept="image/*" 
+                            ref={thumbnailRef} 
+                            onInput={changeThumbnail}
+                            className="d-none"/>          
+                        {beforeThumbnail === null && (<>
+                            <FaPlus/>
+                            <span className="ms-2">썸네일 등록</span>
+                        </>)}
+                        {beforeThumbnail !== null && (<>
+                            <FaRotateRight/>
+                            <span className="ms-2">썸네일 변경</span>    
+                        </>)}
                     </Button>
-                    )}
+                    <Button variant="danger" onClick={clearThumbnail} className="ms-2">
+                        <FaXmark/>
+                        <span className="ms-2">썸네일 제거</span>
+                    </Button>
                 </div>
             </Col>
         </Row>
@@ -221,6 +244,56 @@ export default function AdminSaleEdit() {
                 {beforeThumbnail !== null && (
                 <img src={`${import.meta.env.VITE_SERVER_URL}/api/attach/${beforeThumbnail.attachNo}`} width={300} className="border"/>
                 ) }
+            </Col>
+        </Row>
+
+        {/* position을 이용해서 버튼과 이미지를 합체 (모던 웹페이지 디자인) */}
+        <Row className="mt-2">
+            <Col sm={{offset:3, span:9}}>
+                <div className="position-relative border" style={{width:300, minHeight:300}}
+                    onMouseEnter={e=>setHover(true)} 
+                    onMouseLeave={e=>setHover(false)}>
+                    {/* 기존 이미지를 표시하고 제거, 변경 버튼을 추가 */}
+                    {beforeThumbnail === null && (
+                    <img src={NoImage}
+                            className="position-absolute top-0 start-0 w-100"/>
+                    ) }
+                    {beforeThumbnail !== null && (
+                    <img src={`${import.meta.env.VITE_SERVER_URL}/api/attach/${beforeThumbnail.attachNo}`} 
+                            className="position-absolute top-0 start-0 w-100"/>
+                    ) }
+
+                    {/* hover가 불가능한 환경에서는 그냥 표시하고 가능한 환경에서는 숨겼다가 표시 */}
+                    { hoverState && (<>
+                    <Button as="label" variant="success" 
+                        className="position-absolute" style={
+                            {
+                                top:10, 
+                                right:60,
+                                transition: "opacity 0.1s ease-out",
+                                opacity: hover ? 100 : 0
+                            }
+                        }>
+                        <Form.Control type="file" accept="image/*" 
+                            ref={thumbnailRef} 
+                            onInput={changeThumbnail}
+                            className="d-none"/>          
+                        {beforeThumbnail === null && <FaPlus/>}
+                        {beforeThumbnail !== null && <FaRotateRight/>}
+                    </Button>
+                    <Button variant="danger" onClick={clearThumbnail} 
+                        className="ms-2 position-absolute" style={
+                            {
+                                top:10, 
+                                right:10,
+                                transition: "opacity 0.1s ease-out",
+                                opacity: hover ? 100 : 0
+                            }
+                        }>
+                        <FaXmark/>
+                    </Button>
+                    </>) }
+                </div>
             </Col>
         </Row>
 
