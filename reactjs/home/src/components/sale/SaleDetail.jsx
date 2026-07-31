@@ -10,6 +10,10 @@ import NoImage from "@assets/images/no-image.png";
 import Badge from "react-bootstrap/esm/Badge";
 import Button from "react-bootstrap/esm/Button";
 import { purifyHtml } from "@utils/purify";
+import { useAtomValue } from "jotai";
+import { isAdminState } from "@utils/storage";
+import { FaTrash } from "react-icons/fa6";
+import Swal from "sweetalert2";
 
 export default function SaleDetail() {
     //parameter
@@ -37,7 +41,27 @@ export default function SaleDetail() {
         return `${import.meta.env.VITE_SERVER_URL}/api/attach/${thumbnail.attachNo}`;
     }, [thumbnail]);
 
+    
+    //관리자 권한 확인
+    const isAdmin = useAtomValue(isAdminState);
 
+    const deleteByAdmin = useCallback(async ()=>{
+        //확인창
+        const result = await Swal.fire({
+            title:`정말 상품 정보를 삭제하시겠습니까?`,
+            icon:"warning",
+            showCancelButton:true,
+            confirmButtonText:"확인",
+            cancelButtonText:"취소",
+            confirmButtonColor:"#d63031",
+            cancelButtonColor:"#b2bec3"
+        });
+        if(result.isConfirmed === false) return;//취소
+
+        //삭제 요청
+        const { data } = await apiClient.delete(`/sale/${saleNo}`);
+        console.log(data);
+    }, []);
 
     //sale은 절대로 null이면 안된다
     //→ sale이 null이면 기다려야 한다
@@ -129,5 +153,16 @@ export default function SaleDetail() {
 
             * 백엔드도 관리자만 통과해야함
         */}
+        { isAdmin && (
+        <Row className="mt-5">
+            <Col className="text-end">
+                <Button variant="danger" size="lg" onClick={deleteByAdmin}>
+                    <FaTrash/>
+                    <span className="ms-2">상품 정보 삭제</span>
+                </Button>
+            </Col>
+        </Row>
+        ) }
+
     </>)
 }
