@@ -25,7 +25,7 @@ export default function KakaopayBuyVersion1 (){
         const number = parseInt(replacement) || 0;
         setBuy(prev=>(
             {
-                ...prev, [name] : value
+                ...prev, [name] : number
             }
         ));
     }, []);
