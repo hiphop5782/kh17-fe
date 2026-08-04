@@ -2,7 +2,7 @@ import Jumbotron from "@templates/Jumbotron";
 import { useCallback, useState } from "react";
 import { Form, Col, Row, Button } from "react-bootstrap";
 import { FaMoneyCheckAlt } from "react-icons/fa";
-import { apiClient } from "@util/reaxios";
+import { apiClient } from "@utils/reaxios";
 import { useNavigate } from "react-router-dom";
 
 export default function KakaopayBuyVersion1 (){
