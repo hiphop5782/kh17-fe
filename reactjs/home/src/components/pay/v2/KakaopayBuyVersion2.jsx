@@ -1,10 +1,10 @@
 import Jumbotron from "@templates/Jumbotron";
 import { useCallback, useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { apiClient } from "@utils/reaxios";
-import { Row, Col, ListGroup, ListGroupItem } from "react-bootstrap";
+import { Row, Col, ListGroup, ListGroupItem, Button } from "react-bootstrap";
 import NoImage from "@assets/images/no-image.png";
-import { FaArrowTrendDown } from "react-icons/fa6";
+import { FaArrowTrendDown, FaCartPlus } from "react-icons/fa6";
 
 /*
     계획
@@ -99,6 +99,22 @@ export default function KakaopayBuyVersion2() {
         return rate.toFixed(0);//소수점 2자리
     }, []);
 
+    //구매
+    //- 서버에 알려줘야 할 정보 : 상품번호 + 구매수량
+    const navigate = useNavigate();
+    const purchase = useCallback(async ()=>{
+        const { data } = await apiClient.post(
+            "/kakaopay/v2/buy", 
+            { 
+                orders : orders.map(order => ({
+                            saleNo : order.saleNo, 
+                            quantity : order.quantity
+                        }))
+            }
+        );
+        navigate(data.url);
+    }, [orders]);
+
     return (<>
         <Jumbotron title="상품 결제 확인" content="구매하실 상품의 정보를 확인하세요"/>
 
@@ -141,6 +157,15 @@ export default function KakaopayBuyVersion2() {
                     </ListGroupItem>
                     ))}
                 </ListGroup>
+            </Col>
+        </Row>
+
+        <Row className="mt-5">
+            <Col>
+                <Button variant="success" size="lg" className="w-100" onClick={purchase}>
+                    <FaCartPlus/>
+                    <span className="ms-2">구매하기</span>
+                </Button>
             </Col>
         </Row>
     </>)
