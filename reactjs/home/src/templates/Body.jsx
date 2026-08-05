@@ -45,6 +45,8 @@ import Admin from "@guard/Admin";
 
 import KakaopayBuyVersion1 from "@components/pay/v1/KakaopayBuyVersion1";
 import KakaopayBuySuccessVersion1 from "@components/pay/v1/KakaopayBuySuccessVersion1";
+import KakaopayBuyCancelVersion1 from "@components/pay/v1/KakaopayBuyCancelVersion1";
+import KakaopayBuyFailVersion1 from "@components/pay/v1/KakaopayBuyFailVersion1";
 
 export default function Body() {
 
@@ -94,6 +96,8 @@ export default function Body() {
         {/* 결제 관련 */}
         <Route path="/pay/v1/buy" element={<KakaopayBuyVersion1/>}/>
         <Route path="/pay/v1/buy/success" element={<KakaopayBuySuccessVersion1/>}/>
+        <Route path="/pay/v1/buy/cancel" element={<KakaopayBuyCancelVersion1/>}/>
+        <Route path="/pay/v1/buy/fail" element={<KakaopayBuyFailVersion1/>}/>
 
         {/* error */}
         <Route path="/account/block" element={<AccountBlock/>}/>
