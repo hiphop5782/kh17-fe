@@ -104,10 +104,10 @@ export default function Body() {
         <Route path="/pay/v1/buy/cancel" element={<KakaopayBuyCancelVersion1/>}/>
         <Route path="/pay/v1/buy/fail" element={<KakaopayBuyFailVersion1/>}/>
 
-        <Route path="/pay/v2/buy" element={<KakaopayBuyVersion2/>}/>
-        <Route path="/pay/v2/buy/success" element={<KakaopayBuySuccessVersion2/>}/>
-        <Route path="/pay/v2/buy/cancel" element={<KakaopayBuyCancelVersion2/>}/>
-        <Route path="/pay/v2/buy/fail" element={<KakaopayBuyFailVersion2/>}/>
+        <Route path="/pay/v2/buy" element={<Private><KakaopayBuyVersion2/></Private>}/>
+        <Route path="/pay/v2/buy/success" element={<Private><KakaopayBuySuccessVersion2/></Private>}/>
+        <Route path="/pay/v2/buy/cancel" element={<Private><KakaopayBuyCancelVersion2/></Private>}/>        
+        <Route path="/pay/v2/buy/fail" element={<Private><KakaopayBuyFailVersion2/></Private>}/>
 
         {/* error */}
         <Route path="/account/block" element={<AccountBlock/>}/>
