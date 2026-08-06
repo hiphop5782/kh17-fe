@@ -1,6 +1,7 @@
 import Jumbotron from "@templates/Jumbotron";
 import { useCallback, useEffect } from "react";
 import { useParams } from "react-router-dom";
+import { apiClient } from "@utils/reaxios";
 
 export default function KakaopayBuyDetailVersion2() {
     //path variable

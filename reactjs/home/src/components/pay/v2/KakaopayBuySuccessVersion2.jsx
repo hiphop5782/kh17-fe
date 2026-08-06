@@ -113,7 +113,7 @@ export default function KakaopayBuySuccessVersion2() {
         <Row className="mt-5">
             <Col className="text-end">
                 <Button variant="success" size="lg" 
-                    as={Link} to={`/pay/v2/detail/${purchase.purchaseNo}`}>
+                    as={Link} to={`/pay/v2/buy/detail/${purchase.purchaseNo}`}>
                     <span>결제 상세 내역 보러가기</span>
                     <FaArrowRight className="ms-2"/>
                 </Button>
