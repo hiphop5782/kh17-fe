@@ -5,6 +5,7 @@ import { apiClient } from "@utils/reaxios";
 import { ClockLoader } from "react-spinners";
 import { Badge, Button, Col, ListGroup, ListGroupItem, Row } from "react-bootstrap";
 import NoImage from "@assets/images/no-image.png";
+import { MdSubdirectoryArrowRight } from "react-icons/md";
 
 import dayjs from "dayjs";
 
@@ -34,6 +35,7 @@ export default function KakaopayBuyDetailVersion2() {
         setPurchase(purchase);
         setDetails(details);
         setPayResponse(payResponse);
+        console.log(purchase, details, payResponse);
     }, []);
 
     //상품 개수까지 고려한 결제금액 계산
@@ -102,17 +104,29 @@ export default function KakaopayBuyDetailVersion2() {
         <Row className="mt-2">
             <Col sm={3} className="text-info fw-bold">결제시작시각</Col>
             <Col sm={9} className="text-secondary">
-                <span>{dayjs(purchase.purchaseCtime).format("YYYY년 M월 D일 E H시 m분 s초")}</span>
+                <span>{dayjs(purchase.purchaseCtime).format("YYYY년 M월 D일 dddd H시 m분 s초")}</span>
                 <span className="ms-2">({dayjs(purchase.purchaseCtime).fromNow()})</span>
             </Col>
         </Row>
         <Row className="mt-2">
             <Col sm={3} className="text-info fw-bold">최종변경시각</Col>
             <Col sm={9} className="text-secondary">
-                <span>{dayjs(purchase.purchaseUtime).format("YYYY년 M월 D일 E H시 m분 s초")}</span>
+                <span>{dayjs(purchase.purchaseUtime).format("YYYY년 M월 D일 dddd H시 m분 s초")}</span>
                 <span className="ms-2">({dayjs(purchase.purchaseUtime).fromNow()})</span>
             </Col>
         </Row>
+
+        {/* 전체 취소 버튼 */}
+        { (withInPeriod && purchase.purchaseRemain > 0) && (
+        <Row className="mt-4 text-end">
+            <Col>
+                <Button variant="danger" size="lg">
+                    <FaXmark/>
+                    <span className="ms-2">현재 구매내역 취소하기</span>
+                </Button>
+            </Col>
+        </Row>
+        ) }
 
         {/* 결제 상세 상품 정보 (purchase_detail) */}
         <hr className="my-5"/>
@@ -124,7 +138,9 @@ export default function KakaopayBuyDetailVersion2() {
                     <ListGroupItem key={detail.purchaseDetailNo} className="p-4">
                         <div className="d-flex">
                             {/* 상품 이미지(해결 필요) */}
-                            <img src={NoImage} width={100}/>
+                            <div style={{width:100, height:100, overflow:"hidden"}}>
+                                <img src={NoImage} width={"100%"}/>
+                            </div>
 
                             {/* 상품 정보(스냅샷)와 구매 수량 */}
                             <div className="flex-grow-1 ms-2">
@@ -161,7 +177,7 @@ export default function KakaopayBuyDetailVersion2() {
                                 <div className="mt-2 text-end">
                                     <Button variant="danger" size="sm">
                                         <FaXmark/>
-                                        <span className="ms-2">취소하기</span>
+                                        <span className="ms-2">이 항목 취소하기</span>
                                     </Button>
                                 </div>
                                 ) }
@@ -174,6 +190,90 @@ export default function KakaopayBuyDetailVersion2() {
         </Row>
 
         {/* 카카오페이 정보 */}
-        
+        <hr className="my-5"/>
+        <Row className="mt-2">
+            <Col sm={3} className="text-info fw-bold">지불방식</Col>
+            <Col sm={9} className="text-secondary">
+                {payResponse.paymentMethodType}
+            </Col>
+        </Row>
+        <Row className="mt-2">
+            <Col sm={3} className="text-info fw-bold">결제 시작시간</Col>
+            <Col sm={9} className="text-secondary">
+                {dayjs(payResponse.createdAt).format("YYYY년 M월 D일 dddd H시 m분 s초")}
+            </Col>
+        </Row>
+        <Row className="mt-2">
+            <Col sm={3} className="text-info fw-bold">결제 승인시간</Col>
+            <Col sm={9} className="text-secondary">
+                {dayjs(payResponse.approvedAt).format("YYYY년 M월 D일 dddd H시 m분 s초")}
+            </Col>
+        </Row>
+        {payResponse.canceledAt !== null && (
+        <Row className="mt-2">
+            <Col sm={3} className="text-info fw-bold">결제 취소시간</Col>
+            <Col sm={9} className="text-secondary">
+                {dayjs(payResponse.canceledAt).format("YYYY년 M월 D일 dddd H시 m분 s초")}
+            </Col>
+        </Row>
+        ) }
+        <Row className="mt-2">
+            <Col sm={3} className="text-info fw-bold">금액상세</Col>
+            <Col sm={9} className="text-secondary">
+                <div>
+                    총 
+                    <span className="text-info fw-bold mx-2">
+                        {payResponse.amount.total.toLocaleString()}
+                    </span>
+                    원
+                </div>
+                <div className="ps-2">
+                    <MdSubdirectoryArrowRight/>
+                    <span>
+                        상품가 
+                        <span className="text-info fw-bold mx-2">
+                            {(payResponse.amount.total - payResponse.amount.vat).toLocaleString()}
+                        </span>    
+                        원
+                    </span>
+                </div>
+                <div className="ps-2">
+                    <MdSubdirectoryArrowRight/>
+                    <span>
+                        부가세 
+                        <span className="text-muted fw-bold mx-2">
+                            {payResponse.amount.vat.toLocaleString()}
+                        </span>    
+                        원
+                    </span>
+                </div>
+            </Col>
+        </Row>
+
+        <Row className="mt-4">
+            <Col sm={3} className="text-info fw-bold">결제 상세</Col>
+            <Col sm={9} className="text-secondary">
+                <ListGroup>
+                    {payResponse.paymentActionDetails.map((action, index)=>(
+                    <ListGroupItem key={index}>
+                        <div className="d-flex justify-content-between">
+                            <div>
+                                <Badge bg={
+                                    action.paymentActionType === "PAYMENT" ? "success" : "danger"
+                                }>{action.paymentActionType}</Badge>
+
+                                <span className="ms-2">
+                                    {action.amount.toLocaleString()} 원
+                                </span>
+                            </div>
+                            <div>
+                                {dayjs(action.approvedAt).format()}
+                            </div>
+                        </div>
+                    </ListGroupItem>
+                    ))}
+                </ListGroup>
+            </Col>
+        </Row>
     </>)
 }
