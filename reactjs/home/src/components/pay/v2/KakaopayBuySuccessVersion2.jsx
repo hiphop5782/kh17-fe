@@ -23,7 +23,7 @@ export default function KakaopayBuySuccessVersion2() {
         loadData();
     }, []);
     const loadData = useCallback(async ()=>{
-        const { data } = await apiClient.get(`/purchase/${purchaseNo}`);
+        const { data } = await apiClient.get(`/purchase/simple/${purchaseNo}`);
         //console.log(data);//purchase, sales 필드가 존재
         setPurchase(data.purchase);
         setSales(data.sales);
