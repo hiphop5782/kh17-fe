@@ -73,7 +73,7 @@ export default function SaleDetail() {
     const isLogin = useAtomValue(isLoginState);//로그인 상태
 
     //구매 확인 페이지로 주소를 잘 만들어서 전달
-    const purchase = useCallback(()=>{
+    const purchase = useCallback(async ()=>{
         if(!isLogin) {
             const result = await Swal.fire({
                 title:"로그인이 필요한 서비스입니다",

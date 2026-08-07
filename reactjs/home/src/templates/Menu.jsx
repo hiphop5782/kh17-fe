@@ -12,6 +12,7 @@ import { logoutActionState } from "@utils/storage";
 import axios from "axios";
 import { loginActionState } from "@utils/storage";
 import { authClient } from "@utils/reaxios";
+import { FaCartShopping } from "react-icons/fa6";
 
 export default function Menu() {
     //메뉴에서는 로그인 상태 데이터가 필요하다
@@ -86,7 +87,7 @@ export default function Menu() {
                         <NavDropdown title="카카오페이" id="basic-nav-dropdown">
                             <NavDropdown.Item as={Link} to="/pay/v1/buy">무식한 결제</NavDropdown.Item>
                         </NavDropdown>
-                        <Nav.Link as={Link} to="/session/test">세션테스트</Nav.Link>
+                        {/* <Nav.Link as={Link} to="/session/test">세션테스트</Nav.Link> */}
                         <Nav.Link as={Link} to="/sale/list">상품목록</Nav.Link>
                     </Nav>
                     <Nav>
@@ -101,6 +102,10 @@ export default function Menu() {
                         </NavDropdown>
                         </>)}
                         { isAdmin === false && (<>
+                        <Nav.Link as={Link} to="/account/cart">
+                            <FaCartShopping/>
+                            <span className="ms-1">장바구니</span>
+                        </Nav.Link>
                         <Nav.Link as={Link} to="/account/mypage">내정보</Nav.Link>
                         </>)}
 
