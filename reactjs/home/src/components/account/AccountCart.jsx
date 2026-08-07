@@ -1,9 +1,11 @@
 import Jumbotron from "@templates/Jumbotron";
 import { apiClient } from "@utils/reaxios";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Col, Form, ListGroup, ListGroupItem, Row } from "react-bootstrap";
+import { Button, Col, Form, ListGroup, ListGroupItem, Row } from "react-bootstrap";
 import NoImage from "@assets/images/no-image.png";
-import { FaArrowTrendDown } from "react-icons/fa6";
+import { FaArrowTrendDown, FaCartShopping } from "react-icons/fa6";
+import { BsCashCoin } from "react-icons/bs"
+import { debounce } from "lodash-es";
 
 export default function AccountCart() {
 
@@ -16,8 +18,11 @@ export default function AccountCart() {
 
     const loadData = useCallback(async ()=>{
         const { data } = await apiClient.get("/cart/");
-        setCartList(data.cartItems);
         //console.log(data.cartItems);
+        // setCartList(data.cartItems);//체크 미설정
+        setCartList(data.cartItems.map(//체크 설정
+            item => ({ ...item, choice : true })
+        ));
     }, []);
 
     //할인율 계산 함수
@@ -30,10 +35,13 @@ export default function AccountCart() {
     }, []);
 
     // 수량 변경 함수 (수량이 변경되면 서버에 바로 반영할것인지 결정)
+    // - 수량이 변경되면 함수를 호출하여 서버로 전달하도록 요청
     const changeItemQty = useCallback((e, target)=>{
         const { value } = e.target;
         const replacement = value.replace(/[^0-9]+/g, "");
         const number = parseInt(replacement) || 1;
+
+        sendChangeQty(target, number);
 
         setCartList(
             prev=>prev.map(
@@ -47,6 +55,16 @@ export default function AccountCart() {
             )
         );
     }, []);
+
+    const sendChangeQty = useCallback(
+        debounce(//성능 저하를 위한 debounce를 500ms로 적용
+            async (item, qty)=>{
+                const { data } = await apiClient.patch(
+                    "/cart/", { no : item.no , qty : qty }
+                );
+                console.log("data", data);
+        }, 500)
+    , []);
 
     //항목 체크
     const changeItemSelected = useCallback((e, target)=>{
@@ -73,7 +91,7 @@ export default function AccountCart() {
         // return all;
 
         //return cartList.reduce(계산함수, 초기값);
-        return cartList.reduce((acc, cur) => acc && cur.choice , true );
+        return cartList.reduce((acc, cur) => acc && cur.choice === true , true );
     }, [cartList]);
 
     const toggleAll = useCallback(e=>{
@@ -84,9 +102,31 @@ export default function AccountCart() {
     }, []);
 
     //[1] 체크된 상품의 총 계산금액을 구하여 하단에 출력
-    const totalAmount = useMemo(()=>{}, []);
+    const totalAmount = useMemo(()=>{
+        //return cartList.reduce(계산함수, 초기값);
+        return cartList.reduce((acc, cur)=>{
+            if(cur.choice === true) {//체크되어 있다면
+                return acc + cur.discount * cur.qty;//할인가를 합산
+            }            
+            return acc;//아니면 그대로 반환
+        }, 0);
+    }, [cartList]);
 
     //[2] 체크된 상품의 할인전/후 금액을 각각 구하여 하단에 출력 (=gmarket)
+    const totalAmountObject = useMemo(()=>{
+        return cartList.reduce(
+            (acc, cur)=>{//acc가 객체 (origin, discount라는 필드가 존재)
+                if(cur.choice === true) {//체크되어 있다면
+                    return {
+                        origin : acc.origin + cur.origin * cur.qty ,
+                        discount : acc.discount + cur.discount * cur.qty
+                    }
+                }
+                return acc;//아니면 그대로 반환
+            }, 
+            { origin : 0 , discount : 0 }//초기값이 객체
+        )
+    }, [cartList]);
 
     return (<>
         <Jumbotron title="장바구니" content="상품 수량을 확인하고 구매를 진행해주세요" />
@@ -150,6 +190,44 @@ export default function AccountCart() {
                     </ListGroupItem>
                     ))}
                 </ListGroup>
+            </Col>
+        </Row>
+
+        {/* 
+        <Row className="mt-5">
+            <Col className="text-end fs-2 fw-bold text-info">
+                총 {totalAmount.toLocaleString()}원
+            </Col>
+        </Row> 
+        */}
+
+        <Row className="mt-5 text-end fs-3">
+            <Col>
+                <div className="d-flex justify-content-between">
+                    <span>판매금액</span>
+                    <span>{totalAmountObject.origin.toLocaleString()}원</span>
+                </div>
+                <div className="d-flex justify-content-between">
+                    <span>할인금액</span>
+                    <span>
+                        {(totalAmountObject.origin - totalAmountObject.discount)
+                                                                .toLocaleString()}원
+                    </span>
+                </div>
+                <hr/>
+                <div className="d-flex justify-content-between">
+                    <span>결제금액</span>
+                    <span>{totalAmountObject.discount.toLocaleString()}원</span>
+                </div>
+            </Col>
+        </Row>
+
+        <Row className="mt-5">
+            <Col>
+                <Button variant="success" size="lg" className="w-100">
+                    <BsCashCoin/>
+                    <span className="ms-2">구매하기</span>
+                </Button>
             </Col>
         </Row>
     </>)
