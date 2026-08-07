@@ -6,6 +6,7 @@ import NoImage from "@assets/images/no-image.png";
 import { FaArrowTrendDown, FaCartShopping } from "react-icons/fa6";
 import { BsCashCoin } from "react-icons/bs"
 import { debounce } from "lodash-es";
+import { useNavigate } from "react-router-dom";
 
 export default function AccountCart() {
 
@@ -128,6 +129,24 @@ export default function AccountCart() {
         )
     }, [cartList]);
 
+    //구매 확인 페이지로 이동
+    //- 주소 생성이 필요 : `?sale=번호:수량&sale=번호:수량` 형태
+    const navigate = useNavigate();
+    const purchase = useCallback(()=>{
+        //파라미터 생성 도구 만들기
+        const params = new URLSearchParams();
+        //체크된 모든 항목의 상품번호와 수량을 콜론(:)을 두고 합성해서 추가
+        cartList.forEach(item=>{
+            if(item.choice === true) {
+                const value = `${item.no}:${item.qty}`;
+                //params.set("sale", value);//덮어쓰기
+                params.append("sale", value);//붙이기
+            }
+        });
+        //파라미터를 추가해서 구매페이지로 이동
+        navigate(`/pay/v2/buy?${params.toString()}`);
+    }, [cartList]);
+
     return (<>
         <Jumbotron title="장바구니" content="상품 수량을 확인하고 구매를 진행해주세요" />
 
@@ -224,7 +243,7 @@ export default function AccountCart() {
 
         <Row className="mt-5">
             <Col>
-                <Button variant="success" size="lg" className="w-100">
+                <Button variant="success" size="lg" className="w-100" onClick={purchase}>
                     <BsCashCoin/>
                     <span className="ms-2">구매하기</span>
                 </Button>
