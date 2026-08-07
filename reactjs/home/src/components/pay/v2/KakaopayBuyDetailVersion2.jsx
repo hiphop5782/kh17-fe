@@ -82,6 +82,36 @@ export default function KakaopayBuyDetailVersion2() {
         }
     }, []);
 
+    //항목 취소
+    const cancelUnit = useCallback(async (detail)=>{
+        try {
+            //확인창
+            const result = await Swal.fire({
+                title:"해당 상품의 구매를 취소하시겠습니까?",
+                text:"취소한 구매는 다시 복구할 수 없습니다",
+                icon:"warning",
+                confirmButtonText:"네, 취소하겠습니다",
+                cancelButtonText:"아니오, 취소하지 않겠습니다",
+                showCancelButton:true,
+            });
+            if(result.isConfirmed === false) return;
+
+            //서버 요청
+            const { data } = await apiClient.delete(
+                `/purchase/cancelUnit/${detail.purchaseDetailNo}`
+            );
+
+            toast.success("결제가 취소되었습니다");
+
+            //화면 갱신 처리
+            //loadData();//뒷작업이 동시에 실행
+            await loadData();//뒷작업이 순차적으로 실행 (async 함수 내에서 다른 async 함수를 부를 때)
+        }
+        catch(e) {
+            toast.error("일시적인 오류가 발생했습니다.\n잠시 후 다시 시도해주세요.");
+        }
+    }, []);
+
     if(purchase === null || details === null || payResponse === null) {
         return (<>
             <Jumbotron title="상품 결제 상세" content="결제 내역을 불러오는 중입니다..."/>
@@ -204,7 +234,8 @@ export default function KakaopayBuyDetailVersion2() {
                                     withInPeriod
                                     && (
                                 <div className="mt-2 text-end">
-                                    <Button variant="danger" size="sm">
+                                    <Button variant="danger" size="sm" 
+                                        onClick={e=>cancelUnit(detail)}>
                                         <FaXmark/>
                                         <span className="ms-2">이 항목 취소하기</span>
                                     </Button>
