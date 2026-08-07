@@ -6,6 +6,7 @@ import { ClockLoader } from "react-spinners";
 import { Badge, Button, Col, ListGroup, ListGroupItem, Row } from "react-bootstrap";
 import NoImage from "@assets/images/no-image.png";
 import { MdSubdirectoryArrowRight } from "react-icons/md";
+import Swal from 'sweetalert2'
 
 import dayjs from "dayjs";
 
@@ -15,6 +16,7 @@ dayjs.extend(relativeTime);
 //한국어로 설정
 import "dayjs/locale/ko";
 import { FaXmark } from "react-icons/fa6";
+import { toast } from "react-toastify";
 dayjs.locale("ko");
 
 export default function KakaopayBuyDetailVersion2() {
@@ -52,6 +54,33 @@ export default function KakaopayBuyDetailVersion2() {
         if(purchase === null) return false;
         return dayjs().diff(purchase.purchaseCtime, 'day', false) <= 7;
     }, [purchase]);
+
+    //전체 취소
+    const cancelAll = useCallback(async ()=>{
+        try {
+            //확인창
+            const result = await Swal.fire({
+                title:"결제를 취소하시겠습니까?",
+                text:"취소한 결제는 다시 복구할 수 없습니다",
+                icon:"warning",
+                confirmButtonText:"네, 취소하겠습니다",
+                cancelButtonText:"아니오, 취소하지 않겠습니다",
+                showCancelButton:true,
+            });
+            if(result.isConfirmed === false) return;
+
+            //취소 요청
+            const { data } = await apiClient.delete(`/purchase/cancelAll/${purchaseNo}`);
+            toast.success("결제가 취소되었습니다");
+
+            //화면 갱신 처리
+            //loadData();//뒷작업이 동시에 실행
+            await loadData();//뒷작업이 순차적으로 실행 (async 함수 내에서 다른 async 함수를 부를 때)
+        }
+        catch(e) {
+            toast.error("일시적인 오류입니다.\n잠시 후 다시 시도해주세요.");
+        }
+    }, []);
 
     if(purchase === null || details === null || payResponse === null) {
         return (<>
@@ -120,7 +149,7 @@ export default function KakaopayBuyDetailVersion2() {
         { (withInPeriod && purchase.purchaseRemain > 0) && (
         <Row className="mt-4 text-end">
             <Col>
-                <Button variant="danger" size="lg">
+                <Button variant="danger" size="lg" onClick={cancelAll}>
                     <FaXmark/>
                     <span className="ms-2">현재 구매내역 취소하기</span>
                 </Button>
