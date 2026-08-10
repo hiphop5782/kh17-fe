@@ -6,6 +6,8 @@ import { FaPaperPlane } from "react-icons/fa6";
 import SockJS from "sockjs-client";
 import { v4 as uuidv4 } from "uuid";//랜덤한 UUID 한 개 생성
 
+import "./WebSocketV2AdvancedClient.css";
+
 export default function WebSocketV2AdvancedClient() {
 
     const [client, setClient] = useState(null);//서버와의 연결정보를 가진 객체
@@ -120,6 +122,26 @@ export default function WebSocketV2AdvancedClient() {
                 </div>
 
 
+            </Col>
+        </Row>
+
+        {/* 메세지를 출력 (+부트스트랩 디자인) */}
+        <Row className="mt-5">
+            <Col>
+                <div className="message-wrapper">
+                    {history.map((message, index)=>(
+                    <div className="message-outer" key={index}>
+                        <div className="message-inner">
+                            {/* 가로로 3칸을 나눠 순서대로 프로필/작성자+내용/작성시각으로 구현 */}
+                            <div className="profile-wrapper">
+                                <img src="https://picsum.photos/100"/>
+                            </div>
+                            <div className="content-wrapper">{message.content}</div>
+                            <div className="time-wrapper">a h:mm</div>
+                        </div>
+                    </div>
+                    ))}
+                </div>
             </Col>
         </Row>
     </>)
