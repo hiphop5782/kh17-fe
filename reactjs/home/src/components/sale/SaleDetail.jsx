@@ -183,6 +183,7 @@ export default function SaleDetail() {
                     {/* 수량 선택창과 구매버튼 */}
                     <Form.Control type="number" className="d-inline-block" 
                             style={{width:80}} value={quantity}
+                            onFocus={e=>e.target.select()}
                             onChange={e=>{
                                 let number = parseInt(e.target.value) || 1;
                                 if(number < 1) //최소값 보정 : number = Math.max(number, 1);
