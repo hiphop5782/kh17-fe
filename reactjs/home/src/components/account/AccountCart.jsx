@@ -3,10 +3,12 @@ import { apiClient } from "@utils/reaxios";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Button, Col, Form, ListGroup, ListGroupItem, Row } from "react-bootstrap";
 import NoImage from "@assets/images/no-image.png";
-import { FaArrowTrendDown, FaCartShopping } from "react-icons/fa6";
+import { FaArrowTrendDown, FaCartShopping, FaXmark } from "react-icons/fa6";
 import { BsCashCoin } from "react-icons/bs"
 import { debounce } from "lodash-es";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import Swal from "sweetalert2";
 
 export default function AccountCart() {
 
@@ -147,6 +149,35 @@ export default function AccountCart() {
         navigate(`/pay/v2/buy?${params.toString()}`);
     }, [cartList]);
 
+    // 장바구니 상품삭제
+    const deleteCart = useCallback(async (item)=>{
+        try {
+            //확인창
+            const result = await Swal.fire({
+                title:`장바구니에 담긴 상품을 삭제하시겠습니까?`,
+                icon:"warning",
+                showCancelButton:true,
+                confirmButtonText:"확인",
+                cancelButtonText:"취소",
+                confirmButtonColor:"#d63031",
+                cancelButtonColor:"#b2bec3"
+            });
+            if(result.isConfirmed === false) return;//취소
+            //삭제 요청
+            await apiClient.delete(`/cart/${item.no}`);
+            setCartList(prev=>prev.filter(
+                cartItem => cartItem.no !== item.no
+            ));
+            
+            toast.success("장바구니에서 상품이 제거되었습니다");
+        }
+        catch(e) {
+            //오류 처리
+            toast.error("일시적인 오류가 발생했습니다\n잠시 후 다시 시도해보세요");
+            console.error(e);
+        }
+    }, []);
+
     return (<>
         <Jumbotron title="장바구니" content="상품 수량을 확인하고 구매를 진행해주세요" />
 
@@ -205,6 +236,9 @@ export default function AccountCart() {
                                     <span>개</span>
                                 </div>
                             </div>
+
+                            {/* 삭제버튼 */}
+                            <FaXmark className="mx-1" onClick={e=>deleteCart(item)}/>
                         </div>
                     </ListGroupItem>
                     ))}
