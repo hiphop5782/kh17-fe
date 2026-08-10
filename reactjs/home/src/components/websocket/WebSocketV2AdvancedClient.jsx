@@ -1,6 +1,8 @@
 import { Client } from "@stomp/stompjs";
 import Jumbotron from "@templates/Jumbotron";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { Button, Col, Form, Row } from "react-bootstrap";
+import { FaPaperPlane } from "react-icons/fa6";
 import SockJS from "sockjs-client";
 import { v4 as uuidv4 } from "uuid";//랜덤한 UUID 한 개 생성
 
@@ -8,6 +10,8 @@ export default function WebSocketV2AdvancedClient() {
 
     const [client, setClient] = useState(null);//서버와의 연결정보를 가진 객체
     const [uuid] = useState(()=>uuidv4());//현재 사용자의 식별번호
+    const [history, setHistory] = useState([]);//메세지 저장소
+    const [input, setInput] = useState("");//사용자의 입력
 
     //WebSocket 연결은 들어오자마자 해야하며, 나갈 때 반드시 해제해야 한다
     //→ 연관항목이 없는 useEffect를 사용하고 Clean-Up 함수를 생성해야 한다
@@ -39,7 +43,10 @@ export default function WebSocketV2AdvancedClient() {
 
             //웹소켓의 상황별 Callback 지정
             onConnect: ()=>{//연결되었을 때
-                
+                client.subscribe("/public/advanced", (message)=>{
+                    const json = JSON.parse(message.body);//JSON 해석해서
+                    setHistory(prev=>[...prev, json]);//히스토리에 추가
+                });
             },
             //디버깅 설정(옵션)
             debug: (str)=>console.log(str)
@@ -49,7 +56,7 @@ export default function WebSocketV2AdvancedClient() {
         client.activate();
 
         return client;
-    }, []);
+    }, [uuid]);
     //연결 종료 함수
     const disconnectFromServer = useCallback((client)=>{
         if(client) {//client가 존재한다면
@@ -57,8 +64,63 @@ export default function WebSocketV2AdvancedClient() {
         }
     }, []);
 
+
+    //메세지 전송 함수
+    const sendMessage = useCallback(()=>{
+        //보낼 수 있는 상태인지를 검증
+        if(isConnect === false) return;
+        if(input.trim() === "") return;
+
+        //메세지 전송을 위한 JSON 데이터 생성
+        const json = { content : input };
+
+        //STOMP 규격에 맞는 메세지 생성
+        const stompMessage = {
+            destination: "/app/advanced",//서버로 보낼 목적지
+            headers: {uuid : uuid},//(+추가) 헤더를 key=value 형태로 전달
+            body: JSON.stringify(json),//전송할 내용 (직렬화된 JSON)
+        };
+
+        //전송
+        client.publish(stompMessage);
+        setInput("");//입력값 청소
+    }, [client, input]);
+
+    //client가 연결중인지 확인하는 메모
+    const isConnect = useMemo(()=>{
+        if(client === null) return false;//client가 없는 경우
+        if(client.active === false) return false;//deactivate() 상태인 경우
+        return true;
+    }, [client]);
+
+
     return (<>
         <Jumbotron title="WebSocket Version 2" content="STOMP 메세지에 헤더를 추가해서 사용하기"/>
 
+        <Row className="mt-5">
+            <Form.Label column sm={3}>메세지 입력</Form.Label>
+            <Col sm={9}>
+
+                <div className="d-flex">
+                    {/* 입력창과 버튼은 연결이 활성화 되어있을 경우에만 사용 가능하도록 설정 */}
+                    <Form.Control type="text" disabled={isConnect === false}
+                            value={input} 
+                            onChange={e=>setInput(e.target.value)}
+                            onKeyUp={e=>{
+                                //엔터를 누르면 전송버튼과 동일한 기능을 실행
+                                if(e.key === "Enter") sendMessage();
+                            }}
+                    />
+
+                    <Button variant="success" className="text-nowrap ms-2" 
+                            disabled={isConnect === false} onClick={sendMessage}>
+                        <FaPaperPlane/>
+                        <span className="ms-2 d-none d-sm-inline">전송</span>
+                    </Button>
+                </div>
+
+
+            </Col>
+        </Row>
     </>)
 }
