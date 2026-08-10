@@ -3,11 +3,14 @@ import Jumbotron from "@templates/Jumbotron";
 import { useCallback, useEffect, useState } from "react";
 import SockJS from "sockjs-client";
 import { Client } from "@stomp/stompjs";
+import { Button, Col, Form, Row } from "react-bootstrap";
+import { FaPaperPlane } from "react-icons/fa6";
 
 export default function WebSocketV1BasicClient() {
 
     //WebSocket은 연결을 기반으로 하기 때문에 연결에 사용할 객체가 있어야 한다
     const [client, setClient] = useState(null);//서버와의 연결정보를 가진 객체
+    const [input, setInput] = useState("");//사용자의 입력
 
     //WebSocket 연결은 들어오자마자 해야하며, 나갈 때 반드시 해제해야 한다
     //→ 연관항목이 없는 useEffect를 사용하고 Clean-Up 함수를 생성해야 한다
@@ -58,9 +61,42 @@ export default function WebSocketV1BasicClient() {
         }
     }, []);
 
+    //메세지 전송 함수
+    const sendMessage = useCallback(()=>{
+
+        //메세지 전송을 위한 JSON 데이터 생성
+        const json = { content : input };
+
+        //STOMP 규격에 맞는 메세지 생성
+        const stompMessage = {
+            destination: "/app/basic",//서버로 보낼 목적지
+            body: JSON.stringify(json),//전송할 내용 (직렬화된 JSON)
+        };
+
+        //전송
+        client.publish(stompMessage);
+    }, [client, input]);
+
     return (<>
         <Jumbotron title="WebSocket Version 1" content="기본 웹소켓 예제"/>
 
+        <Row className="mt-5">
+            <Form.Label column sm={3}>메세지 입력</Form.Label>
+            <Col sm={9}>
 
+                <div className="d-flex">
+                    <Form.Control type="text"
+                            value={input} onChange={e=>setInput(e.target.value)}/>
+
+                    <Button variant="success" className="text-nowrap ms-2" 
+                                                    onClick={sendMessage}>
+                        <FaPaperPlane/>
+                        <span className="ms-2 d-none d-sm-inline">전송</span>
+                    </Button>
+                </div>
+
+
+            </Col>
+        </Row>
     </>)
 }
