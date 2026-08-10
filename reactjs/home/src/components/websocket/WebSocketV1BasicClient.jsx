@@ -6,6 +6,10 @@ import { Client } from "@stomp/stompjs";
 import { Button, Col, Form, Row } from "react-bootstrap";
 import { FaPaperPlane } from "react-icons/fa6";
 
+import dayjs from "dayjs";
+import "dayjs/locale/ko";
+dayjs.locale("ko");//한국어로 설정
+
 export default function WebSocketV1BasicClient() {
 
     //WebSocket은 연결을 기반으로 하기 때문에 연결에 사용할 객체가 있어야 한다
@@ -129,6 +133,8 @@ export default function WebSocketV1BasicClient() {
                     {history.map((message, index)=>(
                     <div key={index}>
                         {message.content}
+
+                        {dayjs(message.time).format("A h:mm")}                       
                     </div>
                     ))}
                 </div>
