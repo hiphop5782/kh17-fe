@@ -184,7 +184,11 @@ export default function SaleDetail() {
                     <Form.Control type="number" className="d-inline-block" 
                             style={{width:80}} value={quantity}
                             onChange={e=>{
-                                const number = parseInt(e.target.value) || 1;
+                                let number = parseInt(e.target.value) || 1;
+                                if(number < 1) //최소값 보정 : number = Math.max(number, 1);
+                                    number = 1;
+                                if(number > sale.saleStock) //최대값 보정
+                                    number = sale.saleStock;
                                 setQuantity(number);
                             }}/>
                     <Button variant="success" className="ms-2" onClick={purchase}>구매</Button>
