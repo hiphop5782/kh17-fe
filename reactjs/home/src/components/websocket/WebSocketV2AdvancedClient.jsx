@@ -6,6 +6,10 @@ import { FaPaperPlane } from "react-icons/fa6";
 import SockJS from "sockjs-client";
 import { v4 as uuidv4 } from "uuid";//랜덤한 UUID 한 개 생성
 
+import dayjs from "dayjs";
+import "dayjs/locale/ko";
+dayjs.locale("ko");//한국어로 설정
+
 import "./WebSocketV2AdvancedClient.css";
 
 export default function WebSocketV2AdvancedClient() {
@@ -136,8 +140,15 @@ export default function WebSocketV2AdvancedClient() {
                             <div className="profile-wrapper">
                                 <img src="https://picsum.photos/100"/>
                             </div>
-                            <div className="content-wrapper">{message.content}</div>
-                            <div className="time-wrapper">a h:mm</div>
+                            <div className="content-wrapper">
+                                <div className="sender">피카츄</div>
+                                <div className="content">
+                                    <div className="body">{message.content}</div>
+                                    <div className="time">
+                                        {dayjs(message.time).format("a h:mm")}
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     ))}
