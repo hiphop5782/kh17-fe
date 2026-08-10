@@ -86,9 +86,13 @@ export default function Menu() {
                         </NavDropdown>
                         <NavDropdown title="카카오페이" id="basic-nav-dropdown">
                             <NavDropdown.Item as={Link} to="/pay/v1/buy">무식한 결제</NavDropdown.Item>
+                            <NavDropdown.Item as={Link} to="/sale/list">상품목록</NavDropdown.Item>
                         </NavDropdown>
                         {/* <Nav.Link as={Link} to="/session/test">세션테스트</Nav.Link> */}
-                        <Nav.Link as={Link} to="/sale/list">상품목록</Nav.Link>
+
+                        <NavDropdown title="웹소켓" id="basic-nav-dropdown">
+                            <NavDropdown.Item as={Link} to="/websocket/v1">기본 웹소켓</NavDropdown.Item>
+                        </NavDropdown>
                     </Nav>
                     <Nav>
                         { isLogin === true && (<>
