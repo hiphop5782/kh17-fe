@@ -4,6 +4,12 @@
     flex-direction: column-reverse;
     font-size: 16px;
     background-color: #A1BFD9;
+
+    /* 높이제한을 걸고 스크롤을 추가하고 싶다면 */
+    max-height: 500px;
+    overflow: auto;
+
+    overflow-anchor: none;
 }
 .message-wrapper > .message-outer {
     padding: 0.5em;
