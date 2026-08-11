@@ -13,6 +13,7 @@ import "dayjs/locale/ko";
 dayjs.locale("ko");//한국어로 설정
 
 import "./WebSocketV2AdvancedClient.css";
+import { toast } from "react-toastify";
 
 export default function WebSocketV3MemberClient() {
 
@@ -53,6 +54,11 @@ export default function WebSocketV3MemberClient() {
                 client.subscribe(`/private/dm/${loginUser.accountId}`, (message)=>{
                     const json = JSON.parse(message.body);
                     setHistory(prev=>[...prev, json]);
+                });
+                client.subscribe(`/private/system/${loginUser.accountId}`, (message)=>{
+                    const json = JSON.parse(message.body);
+                    setHistory(prev=>[...prev, json]);
+                    //toast.error(json.content);
                 });
             },
             //디버깅 설정(옵션)
@@ -259,6 +265,13 @@ export default function WebSocketV3MemberClient() {
                             </div>
                             ) }
                             
+                            {/* 시스템 메세지 */}
+                            { message.type === "system" && (
+                            <div className={`system-message text-${message.level} bg-${message.level} border-${message.level}`}
+                                    style={{ "--bs-bg-opacity" : ".10" }}>
+                                {message.content}
+                            </div>
+                            ) }
                         </div>
                         );
                     })}
