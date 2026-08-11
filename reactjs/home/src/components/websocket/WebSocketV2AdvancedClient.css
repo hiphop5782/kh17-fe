@@ -29,6 +29,9 @@
 .message-wrapper > .message-outer > .message-inner > .profile-wrapper > img {
     width:100%;
 }
+.message-wrapper > .message-outer > .message-inner > .content-wrapper {
+    flex-grow: 1;
+}
 .message-wrapper > .message-outer > .message-inner > .content-wrapper > .sender {
     margin-bottom: 0.35em;
 }

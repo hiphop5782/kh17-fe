@@ -1,11 +1,17 @@
 import { Client } from "@stomp/stompjs";
 import { useAtomValue } from "jotai";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import SockJS from "sockjs-client";
 import { loginUserState } from "@utils/storage";
-import { Button, Col, Row, Form } from "react-bootstrap";
+import { Button, Col, Row, Form, Badge } from "react-bootstrap";
 import { FaPaperPlane } from "react-icons/fa6";
 import Jumbotron from "@templates/Jumbotron";
+
+import dayjs from "dayjs";
+import "dayjs/locale/ko";
+dayjs.locale("ko");//한국어로 설정
+
+import "./WebSocketV2AdvancedClient.css";
 
 export default function WebSocketV3MemberClient() {
 
@@ -91,6 +97,36 @@ export default function WebSocketV3MemberClient() {
         return true;
     }, [client]);
 
+    //(+추가) 스크롤을 끝으로 갱신시키는 처리 (반대도 가능) , * reverse인 상황
+    const messageWrapperRef = useRef();
+    useEffect(()=>{
+        //messageWrapperRef.current.scrollTop = 0;//처음으로 (하단)
+        messageWrapperRef.current.scrollTop = -messageWrapperRef.current.scrollHeight; //마지막으로 (상단)
+    }, [history]); 
+
+    //시간을 표시해야 되는 상황인지 판정하는 함수
+    const checkTimeVisible = useCallback((curr, prev)=>{
+        if(!curr) return true;//null, undefined 모두 제거
+        if(!prev) return true;//null, undefined 모두 제거
+
+        if(curr.senderId !== prev.senderId) return true;//작성자 ID가 다르면 시간 표시
+        
+        const currTime = dayjs(curr.time);
+        const prevTime = dayjs(prev.time);
+        const isSameTime = currTime.isSame(prevTime, "minute");
+        return isSameTime === false;//작성시각이 다르면 시간 표시
+    }, []);
+
+    //작성자와 프로필을 표시해야 하는 상황인지 판정하는 함수
+    const checkSenderVisible = useCallback((curr, next)=>{
+        if(!curr) return true;//null, undefined 제거
+        if(!next) return true;//null, undefined 제거
+    
+        if(curr.senderId !== next.senderId) return true;//작성자가 다르면 표시
+
+        return false;
+    }, []);
+
     return (<>
         <Jumbotron title="WebSocket Version 3" content="인증된 사용자끼리의 웹소켓 통신 구현"/>
 
@@ -117,6 +153,55 @@ export default function WebSocketV3MemberClient() {
                 </div>
 
 
+            </Col>
+        </Row>
+
+        {/* 메세지를 출력 (+부트스트랩 디자인) */}
+        <Row className="mt-5">
+            <Col>
+                <div className="message-wrapper" ref={messageWrapperRef}>
+                    {history.map((message, index)=>{
+                        //내 메세지인지 판정
+                        const my = loginUser.accountId === message.senderId;
+                        const isDiffSender = checkSenderVisible(history[index], history[index+1]);
+                        const isDiffTime = checkTimeVisible(history[index], history[index-1]);
+
+                        return  (
+                        <div className={`message-outer ${my ? "my" : ""}`} key={index}>
+                            <div className="message-inner">
+                                {/* 프로필 출력 */}
+                                { !my && (
+                                <div className="profile-wrapper">
+                                    { (isDiffSender) && (
+                                    <img src="https://picsum.photos/100"/>
+                                    )}
+                                </div>
+                                ) }
+                                {/* 컨텐츠(작성자), 내용, 시간 등 출력 */}
+                                <div className="content-wrapper">
+                                    { (!my && isDiffSender) && (
+                                    <div className="sender">
+                                        {message.senderNickname}
+                                        <Badge bg="primary" className="ms-2">
+                                            {message.senderLevel}
+                                        </Badge>
+                                    </div>
+                                    )}
+                                    <div className="content">
+                                        <div className="body">{message.content}</div>
+                                        {/* 시간은 경우에 따라서 나오지 않을 수도 있다 */}
+                                        <div className="time">
+                                        { isDiffTime && (
+                                            dayjs(message.time).format("a h:mm")
+                                        )}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        );
+                    })}
+                </div>
             </Col>
         </Row>
     </>);
