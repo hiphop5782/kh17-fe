@@ -4,8 +4,9 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import SockJS from "sockjs-client";
 import { loginUserState } from "@utils/storage";
 import { Button, Col, Row, Form, Badge } from "react-bootstrap";
-import { FaPaperPlane } from "react-icons/fa6";
+import { FaCircleInfo, FaPaperPlane } from "react-icons/fa6";
 import Jumbotron from "@templates/Jumbotron";
+import { LuMessageCircleMore } from "react-icons/lu";
 
 import dayjs from "dayjs";
 import "dayjs/locale/ko";
@@ -211,7 +212,7 @@ export default function WebSocketV3MemberClient() {
 
                             {/* DM 메세지 */}
                             { message.type === "dm" && (
-                            <div className="message-inner">
+                            <div className="message-inner dm">
                                 {/* 프로필 출력 */}
                                 { !my && (
                                 <div className="profile-wrapper">
@@ -222,7 +223,7 @@ export default function WebSocketV3MemberClient() {
                                 ) }
                                 {/* 컨텐츠(작성자), 내용, 시간 등 출력 */}
                                 <div className="content-wrapper">
-                                    { (!my && isDiffSender) && (
+                                    { isDiffSender && (
                                     <div className="sender">
                                         {/* 
                                             DM은  
@@ -230,6 +231,8 @@ export default function WebSocketV3MemberClient() {
                                             - 수신자에게는 발신자의 정보가 
                                             나와야함
                                         */}
+                                        <LuMessageCircleMore className="me-2"/>
+
                                         { my ? (<>
                                             {`To.${message.receiverNickname}`}
                                             <Badge bg="primary" className="ms-2">

@@ -73,3 +73,9 @@
     margin-left: 0;
     margin-right: 0.5em;
 }
+
+/* DM인 경우 작성자를 강조하도록 표시 */
+.message-wrapper > .message-outer > .message-inner.dm > .content-wrapper > .sender {
+    font-weight: bold;
+    font-style: italic;
+}
