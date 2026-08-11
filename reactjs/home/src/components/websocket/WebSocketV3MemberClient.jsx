@@ -3,8 +3,8 @@ import { useAtomValue } from "jotai";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import SockJS from "sockjs-client";
 import { loginUserState } from "@utils/storage";
-import { Button, Col, Row, Form, Badge } from "react-bootstrap";
-import { FaCircleInfo, FaPaperPlane } from "react-icons/fa6";
+import { Button, Col, Row, Form, Badge, ListGroup, ListGroupItem } from "react-bootstrap";
+import { FaCircleInfo, FaPaperPlane, FaUsers } from "react-icons/fa6";
 import Jumbotron from "@templates/Jumbotron";
 import { LuMessageCircleMore } from "react-icons/lu";
 
@@ -21,6 +21,7 @@ export default function WebSocketV3MemberClient() {
     const loginUser = useAtomValue(loginUserState);
     const [history, setHistory] = useState([]);//메세지 이력
     const [input, setInput] = useState("");//사용자의 입력
+    const [users, setUsers] = useState([]);//접속한 사용자의 목록
 
     useEffect(()=>{
         //최초 1회 실행해야할 작업
@@ -51,6 +52,15 @@ export default function WebSocketV3MemberClient() {
                     const json = JSON.parse(message.body);
                     setHistory(prev=>[...prev, json]);
                 });
+                client.subscribe("/public/system", (message)=>{
+                    const json = JSON.parse(message.body);
+                    setHistory(prev=>[...prev, json]);
+                });
+                client.subscribe("/public/users", (message)=>{
+                    //여기서의 메세지는 List<TokenParseResponseVO>이다. 즉, 배열이다.
+                    const jsonArray = JSON.parse(message.body);
+                    setUsers(jsonArray);
+                });
                 client.subscribe(`/private/dm/${loginUser.accountId}`, (message)=>{
                     const json = JSON.parse(message.body);
                     setHistory(prev=>[...prev, json]);
@@ -59,6 +69,11 @@ export default function WebSocketV3MemberClient() {
                     const json = JSON.parse(message.body);
                     setHistory(prev=>[...prev, json]);
                     //toast.error(json.content);
+                });
+                client.subscribe(`/private/users/${loginUser.accountId}`, (message)=>{
+                    //여기서의 메세지는 List<TokenParseResponseVO>이다. 즉, 배열이다.
+                    const jsonArray = JSON.parse(message.body);
+                    setUsers(jsonArray);
                 });
             },
             //디버깅 설정(옵션)
@@ -172,7 +187,13 @@ export default function WebSocketV3MemberClient() {
 
         {/* 메세지를 출력 (+부트스트랩 디자인) */}
         <Row className="mt-5">
-            <Col>
+            <Col xs={12} className="fs-4">
+                <FaUsers className="me-2"/>
+                <span>{users.length}명</span>
+            </Col>
+
+            {/* 메세지 이력 */}
+            <Col sm={9}>
                 <div className="message-wrapper" ref={messageWrapperRef}>
                     {history.map((message, index)=>{
                         //내 메세지인지 판정
@@ -276,6 +297,17 @@ export default function WebSocketV3MemberClient() {
                         );
                     })}
                 </div>
+            </Col>
+
+            {/* 사용자 목록 */}
+            <Col sm={3}>
+                <ListGroup>
+                    {users.map((user,index)=>(
+                    <ListGroupItem key={index}>
+                        {user.accountId}
+                    </ListGroupItem>
+                    ))}
+                </ListGroup>
             </Col>
         </Row>
     </>);
