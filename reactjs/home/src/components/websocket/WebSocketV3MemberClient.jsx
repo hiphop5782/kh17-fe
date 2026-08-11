@@ -110,6 +110,7 @@ export default function WebSocketV3MemberClient() {
         if(!prev) return true;//null, undefined 모두 제거
 
         if(curr.senderId !== prev.senderId) return true;//작성자 ID가 다르면 시간 표시
+        if(curr.type !== prev.type) return true;//메세지 유형이 다르면 시간 표시
         
         const currTime = dayjs(curr.time);
         const prevTime = dayjs(prev.time);
@@ -123,12 +124,18 @@ export default function WebSocketV3MemberClient() {
         if(!next) return true;//null, undefined 제거
     
         if(curr.senderId !== next.senderId) return true;//작성자가 다르면 표시
+        if(curr.type !== next.type) return true;//메세지 유형이 다르면 시간 표시
 
         return false;
     }, []);
 
     return (<>
         <Jumbotron title="WebSocket Version 3" content="인증된 사용자끼리의 웹소켓 통신 구현"/>
+        <Row>
+            <Col>
+                <h4>현재 아이디 : {loginUser.accountId}</h4>
+            </Col>
+        </Row>
 
         <Row className="mt-5">
             <Form.Label column sm={3}>메세지 입력</Form.Label>
@@ -168,6 +175,8 @@ export default function WebSocketV3MemberClient() {
 
                         return  (
                         <div className={`message-outer ${my ? "my" : ""}`} key={index}>
+                            {/* 일반 채팅 메세지 */}
+                            { message.type === "chat" && (
                             <div className="message-inner">
                                 {/* 프로필 출력 */}
                                 { !my && (
@@ -198,6 +207,55 @@ export default function WebSocketV3MemberClient() {
                                     </div>
                                 </div>
                             </div>
+                            ) }
+
+                            {/* DM 메세지 */}
+                            { message.type === "dm" && (
+                            <div className="message-inner">
+                                {/* 프로필 출력 */}
+                                { !my && (
+                                <div className="profile-wrapper">
+                                    { (isDiffSender) && (
+                                    <img src="https://picsum.photos/100"/>
+                                    )}
+                                </div>
+                                ) }
+                                {/* 컨텐츠(작성자), 내용, 시간 등 출력 */}
+                                <div className="content-wrapper">
+                                    { (!my && isDiffSender) && (
+                                    <div className="sender">
+                                        {/* 
+                                            DM은  
+                                            - 발신자에게는 수신자의 정보가
+                                            - 수신자에게는 발신자의 정보가 
+                                            나와야함
+                                        */}
+                                        { my ? (<>
+                                            {`To.${message.receiverNickname}`}
+                                            <Badge bg="primary" className="ms-2">
+                                                {message.receiverLevel}
+                                            </Badge>
+                                        </>) : (<>
+                                            {`From.${message.senderNickname}`}
+                                            <Badge bg="primary" className="ms-2">
+                                                {message.senderLevel}
+                                            </Badge>
+                                        </>) }
+                                    </div>
+                                    )}
+                                    <div className="content">
+                                        <div className="body">{message.content}</div>
+                                        {/* 시간은 경우에 따라서 나오지 않을 수도 있다 */}
+                                        <div className="time">
+                                        { isDiffTime && (
+                                            dayjs(message.time).format("a h:mm")
+                                        )}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            ) }
+                            
                         </div>
                         );
                     })}
