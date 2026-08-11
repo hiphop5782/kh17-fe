@@ -21,6 +21,7 @@ export default function WebSocketV3MemberClient() {
     const loginUser = useAtomValue(loginUserState);
     const [history, setHistory] = useState([]);//메세지 이력
     const [input, setInput] = useState("");//사용자의 입력
+    const inputRef = useRef();//입력창 제어용 리모컨
     const [users, setUsers] = useState([]);//접속한 사용자의 목록
 
     useEffect(()=>{
@@ -172,6 +173,7 @@ export default function WebSocketV3MemberClient() {
                                 //엔터를 누르면 전송버튼과 동일한 기능을 실행
                                 if(e.key === "Enter") sendMessage();
                             }}
+                            ref={inputRef}
                     />
 
                     <Button variant="success" className="text-nowrap ms-2" 
@@ -303,8 +305,19 @@ export default function WebSocketV3MemberClient() {
             <Col sm={3}>
                 <ListGroup>
                     {users.map((user,index)=>(
-                    <ListGroupItem key={index}>
-                        {user.accountId}
+                    <ListGroupItem key={index} 
+                        className={user.accountId === loginUser.accountId ? "active" : ""}
+                        onClick={e=>{
+                            setInput(`/w ${user.accountId} `);
+                            inputRef.current.focus();
+                        }}
+                        style={{"cursor":"pointer"}}>
+                        
+                        <span>{user.accountId}</span>
+
+                        { user.accountId === loginUser.accountId && (
+                            <span className="ms-1 fw-bold">(나)</span>
+                        ) }
                     </ListGroupItem>
                     ))}
                 </ListGroup>
