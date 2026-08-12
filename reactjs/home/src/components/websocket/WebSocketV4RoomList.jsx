@@ -4,9 +4,13 @@ import { apiClient } from "@utils/reaxios";
 import { Button, Col, Form, Modal, Row } from "react-bootstrap";
 import { FaPlus, FaXmark } from "react-icons/fa6";
 import { toast } from "react-toastify";
+import { useAtomValue } from "jotai";
+import { isLoginState, loginUserState } from "@utils/storage";
 
 export default function WebSocketV4RoomList() {
 
+    const loginUser = useAtomValue(loginUserState);
+    const isLogin = useAtomValue(isLoginState);
     const [rooms, setRooms] = useState([]);//채팅방 목록
     
     useEffect(()=>{
@@ -43,6 +47,7 @@ export default function WebSocketV4RoomList() {
     }, []);
 
     const createRoom = useCallback(async ()=>{
+        if(isLogin === false) return;
         //input이 원치 않는 값이면 차단
         if(input.name.trim() === "") return;
 
@@ -55,7 +60,20 @@ export default function WebSocketV4RoomList() {
         catch(e) {
             toast.error("채팅방 생성에 실패했습니다");
         }
-    }, [input]);
+    }, [input, isLogin]);
+
+    const deleteRoom = useCallback(async (target)=>{
+        try {
+            const { data } = await apiClient.delete(`/room/${target.roomNo}`);
+            //loadRooms();//목록요청
+            setRooms(prev=>prev.filter(
+                room=>room.roomNo !== target.roomNo
+            ));//직접제거
+        }
+        catch(e) {
+            toast.error("방 삭제에 실패했습니다");
+        }
+    }, []);
 
     return (<>
         <Jumbotron title="채팅방 목록" content="그룹 채팅 예제"/>
@@ -66,22 +84,38 @@ export default function WebSocketV4RoomList() {
                 <h4>현재 개설된 채팅방은 총 {rooms.length}개 입니다</h4>
             </Col>
             <Col xs={4} className="text-end">
+                {isLogin && (
                 <Button variant="success" onClick={handleShow}>
                     <FaPlus/>
                     <span className="ms-2">방 만들기</span>
                 </Button>
+                )}
             </Col>
             {rooms.map(room=>(
             <Col key={room.roomNo} xs={12} sm={6}>
                 {/* outer */}
                 <div className="p-2">
                     {/* inner */}
-                    <div className="shadow p-4">
+                    <div className={`
+                        shadow p-4 rounded
+                        ${(isLogin && loginUser.accountId === room.roomOwner)  
+                            ? "border border-info" : ""}
+                    `}>
                         <h4>{room.roomName}</h4>
                         <div>방장 : {room.roomOwner ?? "없음"}</div>
                         <div>인원 : {room.roomLimit ?? "제한 없음"}</div>
                         <div className="text-end">
-                            <Button variant="success">참여</Button>
+                            {/* 내 소유의 방이라면 삭제 버튼을 생성 */}
+                            { (isLogin && loginUser.accountId === room.roomOwner) && (
+                            <Button variant="danger" className="me-2" 
+                                onClick={e=>deleteRoom(room)}>
+                                삭제
+                            </Button>
+                            ) }
+
+                            <Button variant="success" disabled={!isLogin}>
+                                참여
+                            </Button>
                         </div>
                     </div>
                 </div>
