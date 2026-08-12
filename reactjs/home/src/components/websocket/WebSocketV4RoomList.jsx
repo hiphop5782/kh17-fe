@@ -1,11 +1,12 @@
 import Jumbotron from "@templates/Jumbotron";
 import { useCallback, useEffect, useState } from "react";
 import { apiClient } from "@utils/reaxios";
-import { Button, Col, Form, Modal, Row } from "react-bootstrap";
+import { Badge, Button, Col, Form, Modal, Row } from "react-bootstrap";
 import { FaPlus, FaXmark } from "react-icons/fa6";
 import { toast } from "react-toastify";
 import { useAtomValue } from "jotai";
 import { isLoginState, loginUserState } from "@utils/storage";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function WebSocketV4RoomList() {
 
@@ -75,6 +76,15 @@ export default function WebSocketV4RoomList() {
         }
     }, []);
 
+    //방 참여 신청 후 이동
+    const navigate = useNavigate();
+    const joinRoom = useCallback(async (target)=>{
+        //방 신청 요청
+
+        //방 페이지로 이동
+        navigate(`/websocket/v4/${target.roomNo}`);
+    }, []);
+
     return (<>
         <Jumbotron title="채팅방 목록" content="그룹 채팅 예제"/>
 
@@ -101,7 +111,10 @@ export default function WebSocketV4RoomList() {
                         ${(isLogin && loginUser.accountId === room.roomOwner)  
                             ? "border border-info" : ""}
                     `}>
-                        <h4>{room.roomName}</h4>
+                        <h4>
+                            <Badge className="me-2">{room.roomNo}</Badge>
+                            <span>{room.roomName}</span>
+                        </h4>
                         <div>방장 : {room.roomOwner ?? "없음"}</div>
                         <div>인원 : {room.roomLimit ?? "제한 없음"}</div>
                         <div className="text-end">
@@ -113,7 +126,8 @@ export default function WebSocketV4RoomList() {
                             </Button>
                             ) }
 
-                            <Button variant="success" disabled={!isLogin}>
+                            <Button variant="success" disabled={!isLogin}
+                                    onClick={e=>joinRoom(room)}>
                                 참여
                             </Button>
                         </div>
