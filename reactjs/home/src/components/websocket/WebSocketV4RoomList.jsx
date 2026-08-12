@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 import { useAtomValue } from "jotai";
 import { isLoginState, loginUserState } from "@utils/storage";
 import { Link, useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 
 export default function WebSocketV4RoomList() {
 
@@ -79,10 +80,26 @@ export default function WebSocketV4RoomList() {
     //방 참여 신청 후 이동
     const navigate = useNavigate();
     const joinRoom = useCallback(async (target)=>{
-        //방 신청 요청
+        try {
+            //방 신청 요청
+            const { data } = await apiClient.post("/room/enter", { roomNo : target.roomNo });
+            if(data.result === false) {//입장이 불가능한 상황 (인원초과, 차단, ...)
+                await Swal.fire({
+                    title: "방 입장 불가",
+                    text: data.message,
+                    icon: "error",
+                    confirmButtonText: "확인",
+                });
+                return;
+            }
 
-        //방 페이지로 이동
-        navigate(`/websocket/v4/${target.roomNo}`);
+            //방 페이지로 이동
+            navigate(`/websocket/v4/${target.roomNo}`);
+        }
+        catch(e) {
+            toast.error("일시적인 오류가 발생했습니다");
+            console.error(e);
+        }
     }, []);
 
     return (<>
