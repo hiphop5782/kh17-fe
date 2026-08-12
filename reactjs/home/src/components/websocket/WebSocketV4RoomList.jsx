@@ -14,13 +14,16 @@ export default function WebSocketV4RoomList() {
     const loginUser = useAtomValue(loginUserState);
     const isLogin = useAtomValue(isLoginState);
     const [rooms, setRooms] = useState([]);//채팅방 목록
+    const [roomCount, setRoomCount] = useState(0);//채팅방 개수
     
     useEffect(()=>{
         loadRooms();//시작하자마자 방 목록을 불러온다
     }, []);
     const loadRooms = useCallback(async ()=>{
         const { data } = await apiClient.get("/room/")
-        setRooms(data);
+        setRooms(data.rooms);
+        setRoomCount(data.count);
+        // console.log(data);
     }, []);
 
 
@@ -108,7 +111,7 @@ export default function WebSocketV4RoomList() {
         {/* 방 목록 출력 */}
         <Row className="mt-5">
             <Col xs={8}>
-                <h4>현재 개설된 채팅방은 총 {rooms.length}개 입니다</h4>
+                <h4>현재 개설된 채팅방은 총 {roomCount}개 입니다</h4>
             </Col>
             <Col xs={4} className="text-end">
                 {isLogin && (
@@ -133,7 +136,9 @@ export default function WebSocketV4RoomList() {
                             <span>{room.roomName}</span>
                         </h4>
                         <div>방장 : {room.roomOwner ?? "없음"}</div>
-                        <div>인원 : {room.roomLimit ?? "제한 없음"}</div>
+                        <div>
+                            인원 : {room.cnt} / {room.roomLimit ?? "제한 없음"}
+                        </div>
                         <div className="text-end">
                             {/* 내 소유의 방이라면 삭제 버튼을 생성 */}
                             { (isLogin && loginUser.accountId === room.roomOwner) && (
@@ -143,10 +148,19 @@ export default function WebSocketV4RoomList() {
                             </Button>
                             ) }
 
+                            {/* 참여여부(enter)에 따라 버튼을 다르게 표시 */}
+                            { room.enter === 'Y' && (
+                            <Button variant="info" disabled={!isLogin}
+                                    onClick={e=>joinRoom(room)}>
+                                입장
+                            </Button>    
+                            ) }
+                            { room.enter === 'N' && (
                             <Button variant="success" disabled={!isLogin}
                                     onClick={e=>joinRoom(room)}>
                                 참여
                             </Button>
+                            ) }
                         </div>
                     </div>
                 </div>
