@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { apiClient } from "@utils/reaxios";
 import Swal from "sweetalert2";
-import { Button, Col, Form, ListGroup, ListGroupItem, Row } from "react-bootstrap";
+import { Badge, Button, Col, Form, ListGroup, ListGroupItem, Row } from "react-bootstrap";
 import { useAtomValue } from "jotai";
 import { loginUserState } from "@utils/storage";
 import { FaPaperPlane, FaUsers } from "react-icons/fa6";
@@ -25,6 +25,7 @@ export default function WebSocketV4RoomClient() {
         try {
             const { data } = await apiClient.get(`/room/${roomNo}`);
             setRoom(data.room);
+            setUsers(data.users);
         }
         catch(e) {
             if(e.status === 403) {
@@ -52,6 +53,17 @@ export default function WebSocketV4RoomClient() {
     const [history, setHistory] = useState([]);//메세지 이력
     const inputRef = useRef();//입력창 제어용 리모컨
     const [users, setUsers] = useState([]);//접속한 사용자의 목록
+
+    //웹소켓과 별개로 채팅내역을 불러오는 작업이 필요 (AJAX 사용)
+    useEffect(()=>{
+        loadHistory();
+    }, []);
+    const loadHistory = useCallback(async ()=>{
+        const { data } = await apiClient.get(`/room/${roomNo}/messages`);
+        //console.log(data);
+        setHistory(data.messages);
+    }, []);
+
 
     //연결 및 해제
     useEffect(()=>{
@@ -202,7 +214,7 @@ export default function WebSocketV4RoomClient() {
         </Row>
         <Row className="mt-2">
             <Col sm={3} className="text-info fw-bold">인원</Col>
-            <Col sm={9}>? / {room.roomLimit ?? "제한 없음"}</Col>
+            <Col sm={9}>{users.length} / {room.roomLimit ?? "제한 없음"}</Col>
         </Row>
 
         {/* 입력창 */}
