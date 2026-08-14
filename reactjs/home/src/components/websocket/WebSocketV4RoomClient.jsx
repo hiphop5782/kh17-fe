@@ -9,6 +9,7 @@ import { loginUserState } from "@utils/storage";
 import { FaChevronDown, FaPaperPlane, FaUsers } from "react-icons/fa6";
 import SockJS from "sockjs-client";
 import { Client } from "@stomp/stompjs";
+import { GiExitDoor } from "react-icons/gi";
 import dayjs from "dayjs";
 import "dayjs/locale/ko";
 dayjs.locale("ko");//한국어로 설정
@@ -229,6 +230,34 @@ export default function WebSocketV4RoomClient() {
         return false;
     }, []);
 
+    //방 나가기
+    const exitRoom = useCallback(async ()=>{
+        //확인창
+        const result = await Swal.fire({
+            title:"방을 나가시겠습니까?",
+            text:"사라진 대화내역은 다시 복구할 수 없습니다",
+            icon:"warning",
+            confirmButtonText:"네, 나가겠습니다",
+            cancelButtonText:"아니오, 나가지 않겠습니다",
+            showCancelButton:true,
+        });
+        if(result.isConfirmed === false) return;
+
+        //서버에 알려 처리하고
+        const { data } = await apiClient.post(`/room/leave`, { roomNo : roomNo });
+
+        //목록으로 이동
+        navigate("/websocket/v4");
+    }, []);
+
+    //강퇴하기
+    const kickRoom = useCallback(async ()=>{
+        //확인창
+
+        //서버에 알려 처리하고
+
+    }, []);
+
 
     //화면
     if(room === null) {
@@ -250,6 +279,16 @@ export default function WebSocketV4RoomClient() {
         <Row className="mt-2">
             <Col sm={3} className="text-info fw-bold">인원</Col>
             <Col sm={9}>{users.length} / {room.roomLimit ?? "제한 없음"}</Col>
+        </Row>
+
+        {/* 나가기 버튼 */}
+        <Row>
+            <Col className="text-end">
+                <Button variant="danger" onClick={exitRoom}>
+                    <GiExitDoor/>
+                    <span className="ms-2">나가기</span>
+                </Button>
+            </Col>
         </Row>
 
         {/* 입력창 */}
