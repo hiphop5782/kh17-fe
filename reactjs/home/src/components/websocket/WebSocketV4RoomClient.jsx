@@ -12,6 +12,7 @@ import { Client } from "@stomp/stompjs";
 import { GiExitDoor } from "react-icons/gi";
 import dayjs from "dayjs";
 import "dayjs/locale/ko";
+import { toast } from "react-toastify";
 dayjs.locale("ko");//한국어로 설정
 
 export default function WebSocketV4RoomClient() {
@@ -136,6 +137,15 @@ export default function WebSocketV4RoomClient() {
                     //여기서의 메세지는 List<TokenParseResponseVO>이다. 즉, 배열이다.
                     const jsonArray = JSON.parse(message.body);
                     setUsers(jsonArray);
+                });
+                client.subscribe(`/private/${roomNo}/action/${loginUser.accountId}`, (message)=>{
+                    const cmd = message.body;
+                    switch(cmd) {
+                    case "leave":
+                        toast.error("방에서 추방되셨습니다");
+                        navigate("/websocket/v4");
+                        break;
+                    }
                 });
             },
             //디버깅 설정(옵션)
