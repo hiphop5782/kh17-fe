@@ -182,7 +182,7 @@ export default function WebSocketV4RoomClient() {
 
     //(+추가) 스크롤을 끝으로 갱신시키는 처리 (반대도 가능) , * reverse인 상황
     const messageWrapperRef = useRef();
-    const topFlag = useRef(false);//최상단(마지막)이면 true, 아니면 false인 값 (태그 제어 목적이 아님)
+    const topFlag = useRef(true);//최상단(마지막)이면 true, 아니면 false인 값 (태그 제어 목적이 아님)
     useEffect(()=>{
         if(topFlag.current === true){
             keepScrollTop();
