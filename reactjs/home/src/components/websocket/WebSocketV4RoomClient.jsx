@@ -6,7 +6,7 @@ import Swal from "sweetalert2";
 import { Badge, Button, Col, Form, ListGroup, ListGroupItem, Row } from "react-bootstrap";
 import { useAtomValue } from "jotai";
 import { loginUserState } from "@utils/storage";
-import { FaChevronDown, FaPaperPlane, FaUsers } from "react-icons/fa6";
+import { FaChevronDown, FaPaperPlane, FaUsers, FaXmark } from "react-icons/fa6";
 import SockJS from "sockjs-client";
 import { Client } from "@stomp/stompjs";
 import { GiExitDoor } from "react-icons/gi";
@@ -251,11 +251,21 @@ export default function WebSocketV4RoomClient() {
     }, []);
 
     //강퇴하기
-    const kickRoom = useCallback(async ()=>{
+    const kickRoom = useCallback(async (target)=>{
         //확인창
+        const result = await Swal.fire({
+            title:`${target.accountId}님을 추방하시겠습니까?`,
+            icon:"warning",
+            confirmButtonText:"네, 추방하겠습니다",
+            cancelButtonText:"아니오, 추방하지 않겠습니다",
+            showCancelButton:true,
+        });
+        if(result.isConfirmed === false) return;
 
         //서버에 알려 처리하고
-
+        const { data } = await apiClient.post(
+            "/room/kick", { roomNo : roomNo , accountId : target.accountId }
+        );
     }, []);
 
 
@@ -327,7 +337,7 @@ export default function WebSocketV4RoomClient() {
             </Col>
 
             {/* 메세지 이력 */}
-            <Col sm={9}>
+            <Col sm={8}>
                 <div className="message-wrapper" ref={messageWrapperRef}
                         onScroll={isScrollTop}>
                     {/* 첫지점(맨아래) */}
@@ -402,7 +412,7 @@ export default function WebSocketV4RoomClient() {
             </Col>
 
             {/* 사용자 목록 */}
-            <Col sm={3}>
+            <Col sm={4}>
                 <ListGroup>
                     {users.map((user,index)=>(
                     <ListGroupItem key={index} 
@@ -413,11 +423,26 @@ export default function WebSocketV4RoomClient() {
                         }}
                         style={{"cursor":"pointer"}}>
                         
-                        <span>{user.accountId}</span>
-
-                        { user.accountId === loginUser.accountId && (
-                            <span className="ms-1 fw-bold">(나)</span>
-                        ) }
+                        <div className="d-flex justify-content-between">
+                            <div>
+                                <span>{user.accountId}</span>
+                                { user.accountId === loginUser.accountId && (
+                                    <span className="ms-1 fw-bold">(나)</span>
+                                ) }                                
+                            </div>
+                            <div>
+                                {/* 방장이면서 자신을 제외한 사람에게 x마크를 추가 */}
+                                {   ( 
+                                    room.roomOwner === loginUser.accountId 
+                                    && 
+                                    user.accountId !== loginUser.accountId
+                                    ) && (
+                                    <FaXmark className="text-danger fw-bold"
+                                        onClick={e=>kickRoom(user)}/>    
+                                )}
+                            </div>
+                        </div>
+                        
                     </ListGroupItem>
                     ))}
                 </ListGroup>
