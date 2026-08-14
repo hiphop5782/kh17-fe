@@ -139,7 +139,9 @@ export default function WebSocketV4RoomClient() {
                     setUsers(jsonArray);
                 });
                 client.subscribe(`/private/${roomNo}/action/${loginUser.accountId}`, (message)=>{
+                    console.log("action channel");
                     const cmd = message.body;
+                    console.log(cmd);
                     switch(cmd) {
                     case "leave":
                         toast.error("방에서 추방되셨습니다");
@@ -427,10 +429,6 @@ export default function WebSocketV4RoomClient() {
                     {users.map((user,index)=>(
                     <ListGroupItem key={index} 
                         className={user.accountId === loginUser.accountId ? "active" : ""}
-                        onClick={e=>{
-                            setInput(`/w ${user.accountId} `);
-                            inputRef.current.focus();
-                        }}
                         style={{"cursor":"pointer"}}>
                         
                         <div className="d-flex justify-content-between">
