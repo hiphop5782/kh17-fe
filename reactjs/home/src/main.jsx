@@ -35,7 +35,7 @@ import { Provider } from "jotai";
 
 createRoot(document.getElementById('root')).render(
   // <StrictMode>
-  <BrowserRouter>
+  <BrowserRouter basename="/views">
     <Provider>
       {/* 개발 모드일 때만 표시되도록 조건 설정 */}
       { import.meta.env.DEV && (
